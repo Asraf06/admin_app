@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">NPC Admin Board</string>
+    <string name="title_activity_main">NPC Admin Board</string>
+    <string name="package_name">com.npcnoticeboard.admin</string>
+    <string name="custom_url_scheme">com.npcnoticeboard.admin</string>
+</resources>

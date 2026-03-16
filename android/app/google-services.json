@@ -1,0 +1,93 @@
+{
+  "project_info": {
+    "project_number": "529840057304",
+    "firebase_url": "https://npc-notice-board-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "npc-notice-board",
+    "storage_bucket": "npc-notice-board.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529840057304:android:9961f7b9d8f4da79ee60ad",
+        "android_client_info": {
+          "package_name": "com.npcnoticeboard.admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "529840057304-stvl9kna24cj9ngdkefqht2meaqgvmuh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.npcnoticeboard.admin",
+            "certificate_hash": "9a45b415a4f95cbbe8cbff283a2323a37f2f7a46"
+          }
+        },
+        {
+          "client_id": "529840057304-obbs5438idptq2qqlmor0ormdq2lf21f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmcASe47m4GFugECZpa7BU_RKz5m2I5tM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "529840057304-obbs5438idptq2qqlmor0ormdq2lf21f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529840057304:android:68183ef7c9be9d4cee60ad",
+        "android_client_info": {
+          "package_name": "com.npcnoticeboard.asraf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "529840057304-370g31qebqpcnuo9n4i5nv47sm6n3qh7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.npcnoticeboard.asraf",
+            "certificate_hash": "9c14492b1857c3074ff58c93736d7360185e022e"
+          }
+        },
+        {
+          "client_id": "529840057304-6cc5gejcfm6rdbl4s13a7joajngsiq0h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.npcnoticeboard.asraf",
+            "certificate_hash": "9a45b415a4f95cbbe8cbff283a2323a37f2f7a46"
+          }
+        },
+        {
+          "client_id": "529840057304-obbs5438idptq2qqlmor0ormdq2lf21f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmcASe47m4GFugECZpa7BU_RKz5m2I5tM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "529840057304-obbs5438idptq2qqlmor0ormdq2lf21f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
