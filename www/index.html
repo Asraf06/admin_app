@@ -311,20 +311,41 @@
             }
 
             .mobile-compact-form .text-lg {
-                font-size: 0.9rem !important;
-                padding: 0.5rem !important;
+                font-size: 0.85rem !important;
+                padding: 0.4rem 0.6rem !important;
             }
 
             .mobile-compact-form textarea {
-                rows: 2 !important;
-                padding: 0.5rem !important;
+                height: 80px !important;
+                padding: 0.4rem 0.6rem !important;
+                font-size: 0.85rem !important;
             }
 
-            .attachment-compact {
+            .select-trigger {
                 display: flex;
                 align-items: center;
-                gap: 0.5rem;
-                padding: 0.4rem !important;
+                gap: 0.3rem;
+                padding: 0.4rem 0.6rem;
+                background: #f3f4f6;
+                border: 1.5px solid #000;
+                border-radius: 9999px;
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                white-space: nowrap;
+                transition: all 0.2s;
+                min-width: fit-content;
+            }
+
+            .dark .select-trigger {
+                background: #18181b;
+                border-color: #fff;
+            }
+
+            .select-trigger span {
+                max-width: 80px;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .mobile-grid-2x2 {
@@ -335,7 +356,7 @@
             
             .mobile-compact-header {
                 font-size: 1.25rem !important;
-                margin-bottom: 1rem !important;
+                margin-bottom: 0.75rem !important;
             }
             
             .mobile-compact-btn {
@@ -344,35 +365,15 @@
                 font-size: 0.8rem !important;
             }
 
-            /* New Selection Row */
             .mobile-selection-row {
                 padding: 4px 0;
-            }
-
-            .select-trigger {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.5rem 1rem;
-                background: #f3f4f6;
-                border: 2px solid #000;
-                border-radius: 9999px;
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-                white-space: nowrap;
-                transition: all 0.2s;
-            }
-
-            .dark .select-trigger {
-                background: #18181b;
-                border-color: #fff;
             }
 
             .select-trigger:active {
                 transform: scale(0.95);
                 opacity: 0.8;
             }
+
 
             .no-scrollbar::-webkit-scrollbar {
                 display: none;
@@ -1222,12 +1223,10 @@
                 <button onclick="toggleSidebar()"><i data-lucide="menu" class="w-6 h-6"></i></button>
             </div>
 
-            <div id="tab-create" class="max-w-2xl mx-auto p-4 md:p-12 animate-fade-in">
-                <h2
-                    class="text-3xl font-bold mb-8 uppercase border-b-2 border-black dark:border-white pb-2 inline-block mobile-compact-header">
-                    Post New Notice</h2>
-
-                <form id="noticeForm" onsubmit="postNotice(event)" class="space-y-6 mobile-compact-form">
+            <div class="tab-content hidden animate-fade-in p-2 md:p-12 mb-20" id="tab-create">
+                <h1 class="text-3xl font-black mb-4 dark:text-white uppercase tracking-tighter mobile-compact-header">Post New Notice</h1>
+                
+                <form id="noticeForm" onsubmit="postNotice(event)" class="space-y-3 mobile-compact-form w-full">
                     <div>
                         <label
                             class="block text-[10px] font-bold uppercase mb-1 bg-black text-white dark:bg-white dark:text-black inline-block px-1 py-0.5">Title</label>
@@ -1265,11 +1264,17 @@
                             <!-- Layout Segmented Control -->
                             <div class="layout-control-group flex-shrink-0">
                                 <input type="hidden" id="nLayout" value="grid">
-                                <button type="button" onclick="setNoticeLayout('single')" id="layout-btn-single" class="p-1.5 rounded-lg transition-colors opacity-40">
-                                    <i data-lucide="list" class="w-4 h-4"></i>
+                                <button type="button" onclick="setNoticeLayout('single')" id="layout-btn-single" class="p-1 px-1.5 rounded-lg transition-colors opacity-40">
+                                    <i data-lucide="list" class="w-3.5 h-3.5"></i>
                                 </button>
-                                <button type="button" onclick="setNoticeLayout('grid')" id="layout-btn-grid" class="p-1.5 rounded-lg transition-colors layout-btn-active">
-                                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                                <button type="button" onclick="setNoticeLayout('grid')" id="layout-btn-grid" class="p-1 px-1.5 rounded-lg transition-colors layout-btn-active">
+                                    <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <button type="button" onclick="setNoticeLayout('hero')" id="layout-btn-hero" class="p-1 px-1.5 rounded-lg transition-colors opacity-40">
+                                    <i data-lucide="newspaper" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <button type="button" onclick="setNoticeLayout('masonry')" id="layout-btn-masonry" class="p-1 px-1.5 rounded-lg transition-colors opacity-40">
+                                    <i data-lucide="columns-2" class="w-3.5 h-3.5"></i>
                                 </button>
                             </div>
                         </div>
@@ -2279,19 +2284,17 @@
 
         function setNoticeLayout(layout) {
             document.getElementById('nLayout').value = layout;
-            const btnSingle = document.getElementById('layout-btn-single');
-            const btnGrid = document.getElementById('layout-btn-grid');
-            if (layout === 'single') {
-                btnSingle.classList.add('layout-btn-active');
-                btnSingle.classList.remove('opacity-40');
-                btnGrid.classList.remove('layout-btn-active');
-                btnGrid.classList.add('opacity-40');
-            } else {
-                btnGrid.classList.add('layout-btn-active');
-                btnGrid.classList.remove('opacity-40');
-                btnSingle.classList.remove('layout-btn-active');
-                btnSingle.classList.add('opacity-40');
-            }
+            const layouts = ['single', 'grid', 'hero', 'masonry'];
+            layouts.forEach(l => {
+                const btn = document.getElementById(`layout-btn-${l}`);
+                if (l === layout) {
+                    btn.classList.add('layout-btn-active');
+                    btn.classList.remove('opacity-40');
+                } else {
+                    btn.classList.remove('layout-btn-active');
+                    btn.classList.add('opacity-40');
+                }
+            });
         }
 
         function updateFilePreviews(input) {
