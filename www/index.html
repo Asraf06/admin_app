@@ -6637,8 +6637,18 @@
             }
         }
 
-        // --- CAPACITOR BACK BUTTON HANDLER ---
+        // --- CAPACITOR BACK BUTTON  & GOOGLE AUTH INIT ---
         document.addEventListener('DOMContentLoaded', () => {
+            if (window.Capacitor && window.Capacitor.Plugins.GoogleAuth) {
+                window.Capacitor.Plugins.GoogleAuth.initialize({
+                    clientId: '529840057304-obbs5438idptq2qqlmor0ormdq2lf21f.apps.googleusercontent.com',
+                    scopes: ['profile', 'email'],
+                    grantOfflineAccess: true
+                }).catch(e => {
+                    console.warn("GoogleAuth init error:", e);
+                });
+            }
+
             if (window.Capacitor && window.Capacitor.Plugins.App) {
                 window.Capacitor.Plugins.App.addListener('backButton', () => {
                     const modals = [
