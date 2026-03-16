@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "529840057304-k81kh8fta1c969dp13qbmgusn3q55rn1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.npcnoticeboard.admin",
+            "certificate_hash": "9c14492b1857c3074ff58c93736d7360185e022e"
+          }
+        },
+        {
           "client_id": "529840057304-stvl9kna24cj9ngdkefqht2meaqgvmuh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
