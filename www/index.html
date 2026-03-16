@@ -292,6 +292,58 @@
             position: relative;
         }
 
+        @media (max-width: 640px) {
+            .mobile-compact-form {
+                gap: 0.5rem !important;
+            }
+
+            .mobile-compact-form .space-y-6 > * + * {
+                margin-top: 0.5rem !important;
+            }
+
+            .mobile-compact-form .p-4 {
+                padding: 0.5rem !important;
+            }
+
+            .mobile-compact-form label {
+                margin-bottom: 0.125rem !important;
+                font-size: 10px !important;
+            }
+
+            .mobile-compact-form .text-lg {
+                font-size: 0.9rem !important;
+                padding: 0.5rem !important;
+            }
+
+            .mobile-compact-form textarea {
+                rows: 2 !important;
+                padding: 0.5rem !important;
+            }
+
+            .attachment-compact {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.4rem !important;
+            }
+
+            .mobile-grid-2x2 {
+                display: grid;
+                grid-template-cols: repeat(2, 1fr);
+                gap: 0.4rem !important;
+            }
+            
+            .mobile-compact-header {
+                font-size: 1.25rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .mobile-compact-btn {
+                padding-top: 0.75rem !important;
+                padding-bottom: 0.75rem !important;
+                font-size: 0.8rem !important;
+            }
+        }
         .video-progress-bar::after {
             content: '';
             position: absolute;
@@ -1087,15 +1139,15 @@
                 <button onclick="toggleSidebar()"><i data-lucide="menu" class="w-6 h-6"></i></button>
             </div>
 
-            <div id="tab-create" class="max-w-2xl mx-auto p-6 md:p-12 animate-fade-in">
+            <div id="tab-create" class="max-w-2xl mx-auto p-4 md:p-12 animate-fade-in">
                 <h2
-                    class="text-3xl font-bold mb-8 uppercase border-b-2 border-black dark:border-white pb-2 inline-block">
+                    class="text-3xl font-bold mb-8 uppercase border-b-2 border-black dark:border-white pb-2 inline-block mobile-compact-header">
                     Post New Notice</h2>
 
-                <form onsubmit="postNotice(event)" class="space-y-6">
+                <form id="noticeForm" onsubmit="postNotice(event)" class="space-y-6 mobile-compact-form">
                     <div>
                         <label
-                            class="block text-xs font-bold uppercase mb-2 bg-black text-white dark:bg-white dark:text-black inline-block px-2 py-1">Title</label>
+                            class="block text-[10px] font-bold uppercase mb-1 bg-black text-white dark:bg-white dark:text-black inline-block px-1 py-0.5">Title</label>
                         <input type="text" id="nTitle" required
                             class="w-full p-4 bg-transparent border-2 border-black dark:border-white outline-none focus:bg-gray-50 dark:focus:bg-zinc-900 transition-colors text-lg font-bold placeholder-gray-400"
                             placeholder="e.g. Mid-Term Exam Schedule">
@@ -1103,79 +1155,70 @@
 
                     <div>
                         <label
-                            class="block text-xs font-bold uppercase mb-2 bg-black text-white dark:bg-white dark:text-black inline-block px-2 py-1">Content
+                            class="block text-[10px] font-bold uppercase mb-1 bg-black text-white dark:bg-white dark:text-black inline-block px-1 py-0.5">Content
                             (HTML Supported)</label>
-                        <textarea id="nBody" required rows="6"
+                        <textarea id="nBody" required rows="3"
                             class="w-full p-4 bg-transparent border-2 border-black dark:border-white outline-none focus:bg-gray-50 dark:focus:bg-zinc-900 transition-colors font-serif placeholder-gray-400"
                             placeholder="Write the details here..."></textarea>
                     </div>
 
-                    <!-- NEW: Media Upload Section -->
-                    <div class="border-2 border-black dark:border-white p-4">
-                        <label
-                            class="block text-xs font-bold uppercase mb-3 bg-gray-100 dark:bg-zinc-800 px-2 py-1 inline-block">Attachments
-                            (Images/Videos)</label>
-
-                        <div class="mb-4">
-                            <input type="file" id="nFiles" multiple accept="image/*,video/*" class="block w-full text-sm text-slate-500
-                              file:mr-4 file:py-2 file:px-4
-                              file:border-2 file:border-black dark:file:border-white
-                              file:text-xs file:font-bold file:uppercase
-                              file:bg-transparent file:text-black dark:file:text-white
-                              hover:file:bg-gray-50 dark:hover:file:bg-zinc-900
-                            " />
-                            <p class="text-[10px] mt-1 opacity-60">Supports multiple images (ImgBB) and videos
-                                (Cloudinary)</p>
-                        </div>
-
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase mb-1">Collage Layout</label>
-                            <select id="nLayout"
-                                class="w-full p-2 bg-transparent border-2 border-black dark:border-white text-xs font-bold uppercase outline-none">
-                                <option value="grid">Grid (Default)</option>
-                                <option value="hero">Hero (Featured Top)</option>
-                                <option value="masonry">Masonry (Flow)</option>
-                                <option value="single">Single Stream</option>
-                            </select>
-                        </div>
-
-                        <!-- Progress Bar -->
-                        <div id="upload-progress-container" class="hidden mt-4">
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 h-2.5">
-                                <div id="upload-progress-bar" class="bg-blue-600 h-2.5" style="width: 0%"></div>
+                    <!-- NEW: Media Upload Section (Condensed) -->
+                    <div class="border-2 border-black dark:border-white p-2">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-[10px] font-bold uppercase opacity-60">Media & Layout</label>
+                            <div class="flex gap-4">
+                                <button type="button" onclick="document.getElementById('nFiles').click()" class="flex items-center gap-1 text-[10px] font-bold uppercase">
+                                    <i data-lucide="image" class="w-4 h-4"></i> Add
+                                </button>
+                                <select id="nLayout"
+                                    class="bg-transparent border-b-2 border-black dark:border-white text-[10px] font-bold uppercase outline-none cursor-pointer">
+                                    <option value="grid">Grid (Def)</option>
+                                    <option value="hero">Hero</option>
+                                    <option value="masonry">Flow</option>
+                                    <option value="single">List</option>
+                                </select>
                             </div>
-                            <p id="upload-status-text" class="text-xs mt-1 font-mono">Uploading...</p>
+                        </div>
+
+                        <input type="file" id="nFiles" multiple accept="image/*,video/*" class="hidden" />
+                        
+                        <!-- Progress Bar (Smaller) -->
+                        <div id="upload-progress-container" class="hidden">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 h-1">
+                                <div id="upload-progress-bar" class="bg-blue-600 h-1" style="width: 0%"></div>
+                            </div>
+                            <p id="upload-status-text" class="text-[8px] mt-0.5 font-mono">Uploading...</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 mobile-grid-2x2 md:grid-cols-4 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase mb-2">Target Section</label>
+                            <label class="block text-[9px] font-bold uppercase mb-1 opacity-60">Section</label>
                             <div id="nSection-container"></div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase mb-2">Target Dept</label>
+                            <label class="block text-[9px] font-bold uppercase mb-1 opacity-60">Dept</label>
                             <div id="nDept-container"></div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase mb-2">Target Sem</label>
+                            <label class="block text-[9px] font-bold uppercase mb-1 opacity-60">Sem</label>
                             <div id="nSem-container"></div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase mb-2">Category</label>
+                            <label class="block text-[9px] font-bold uppercase mb-1 opacity-60">Category</label>
                             <div id="nType-container"></div>
                         </div>
                     </div>
 
-                    <!-- Subject Selection -->
+                    <!-- Subject Selection (Condensed) -->
                     <div>
-                        <label class="block text-xs font-bold uppercase mb-2">Target Subject (Optional)</label>
+                        <label class="block text-[9px] font-bold uppercase mb-1 opacity-60">Subject (Optional)</label>
                         <div id="nSubject-container"></div>
                     </div>
 
                     <div class="pt-4">
                         <button type="submit" id="btn-publish"
-                            class="w-full md:w-auto px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_0px_rgba(100,100,100,0.5)]">
+                            class="w-full md:w-auto px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_0px_rgba(100,100,100,0.5)] mobile-compact-btn">
                             Publish Notice
                         </button>
                     </div>
