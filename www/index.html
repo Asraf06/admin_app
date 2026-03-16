@@ -2327,14 +2327,28 @@
             if (window.Capacitor && window.Capacitor.Plugins.GoogleAuth) {
                 try {
                     const user = await window.Capacitor.Plugins.GoogleAuth.signIn();
-                    const credential = firebase.auth.GoogleAuthProvider.credential(user.authentication.idToken);
+                    const authData = user.authentication || {};
+                    const idToken = authData.idToken || user.idToken;
+                    const accessToken = authData.accessToken || user.accessToken;
+
+                    if (!idToken) {
+                        throw new Error("No ID Token found in Google response. Check your configuration.");
+                    }
+
+                    const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
                     const result = await auth.signInWithCredential(credential);
+
                     if (result.user.email !== ADMIN_EMAIL) {
                         auth.signOut();
                         showCustomAlert("Access Denied", "This Google account is not authorized as an Admin.", "error");
                     }
                 } catch (e) {
-                    showCustomAlert("Login Error", e.message, "error");
+                    console.error("Google login error:", e);
+                    let msg = e.message || "Unknown error during login.";
+                    if (e.code == '10' || msg.includes('developer_error')) {
+                        msg = "Developer Error (10): Signature mismatch or invalid Client ID. Ensure SHA-1 matches in Firebase.";
+                    }
+                    showCustomAlert("Login Error", msg, "error");
                 }
             } else {
                 const provider = new firebase.auth.GoogleAuthProvider();
@@ -6642,6 +6656,7 @@
             if (window.Capacitor && window.Capacitor.Plugins.GoogleAuth) {
                 window.Capacitor.Plugins.GoogleAuth.initialize({
                     clientId: '529840057304-obbs5438idptq2qqlmor0ormdq2lf21f.apps.googleusercontent.com',
+                    serverClientId: '529840057304-obbs5438idptq2qqlmor0ormdq2lf21f.apps.googleusercontent.com',
                     scopes: ['profile', 'email'],
                     grantOfflineAccess: true
                 }).catch(e => {
