@@ -1423,10 +1423,10 @@
             <!-- Chat Tab -->
             <div id="tab-chat"
                 class="hidden h-screen bg-gray-100 dark:bg-zinc-900 flex flex-col md:flex-row overflow-hidden fixed inset-0 md:static z-50">
-                <!-- Mobile Back Button overlay -->
-                <button onclick="switchTab('create')"
+                <!-- Mobile Sidebar Toggle overlay -->
+                <button id="admin-chat-list-back" onclick="toggleSidebar()"
                     class="md:hidden absolute top-4 left-4 z-50 p-2 bg-black text-white rounded-full shadow-lg">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <i data-lucide="menu" class="w-4 h-4"></i>
                 </button>
 
                 <!-- Sidebar (List) -->
@@ -4199,7 +4199,9 @@
             if (window.innerWidth < 768) {
                 const sidebar = document.getElementById('admin-chat-sidebar');
                 const area = document.getElementById('admin-chat-area');
+                const listBack = document.getElementById('admin-chat-list-back');
                 if (sidebar) sidebar.classList.add('hidden');
+                if (listBack) listBack.classList.add('hidden');
                 if (area) {
                     area.classList.remove('hidden');
                     area.classList.add('flex');
@@ -4211,6 +4213,10 @@
             document.getElementById('admin-chat-sidebar').classList.remove('hidden');
             document.getElementById('admin-chat-area').classList.add('hidden');
             document.getElementById('admin-chat-area').classList.remove('flex');
+            
+            const listBack = document.getElementById('admin-chat-list-back');
+            if (listBack) listBack.classList.remove('hidden');
+            
             cancelAdminReply();
         }
 
