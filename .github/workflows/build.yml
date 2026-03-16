@@ -34,8 +34,8 @@ jobs:
     - name: Setup Debug Keystore
       run: |
         echo "${{ secrets.ANDROID_DEBUG_KEYSTORE_BASE64 }}" | base64 -d > android/debug.keystore
-        echo "===== DEBUG KEYSTORE SHA-1 ====="
-        keytool -list -v -keystore android/debug.keystore -storepass android -alias androiddebugkey | grep SHA1
+        echo "===== KEYSTORE FINGERPRINTS ====="
+        keytool -list -v -keystore android/debug.keystore -storepass android -alias androiddebugkey | grep -E "SHA1|SHA256"
         echo "================================"
 
     - name: Build with Gradle
