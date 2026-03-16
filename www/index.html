@@ -350,7 +350,7 @@
 
             .mobile-grid-2x2 {
                 display: grid;
-                grid-template-cols: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 1fr);
                 gap: 0.4rem !important;
             }
             
@@ -4190,13 +4190,21 @@
             });
 
             // Mobile view handling
-            if (window.innerWidth < 768) {
-                document.getElementById('admin-chat-sidebar').classList.add('hidden');
-                document.getElementById('admin-chat-area').classList.remove('hidden');
-                document.getElementById('admin-chat-area').classList.add('flex');
-            }
+            openAdminChatMobile();
 
             loadAdminMessages(adminActiveChatId);
+        }
+
+        function openAdminChatMobile() {
+            if (window.innerWidth < 768) {
+                const sidebar = document.getElementById('admin-chat-sidebar');
+                const area = document.getElementById('admin-chat-area');
+                if (sidebar) sidebar.classList.add('hidden');
+                if (area) {
+                    area.classList.remove('hidden');
+                    area.classList.add('flex');
+                }
+            }
         }
 
         function closeAdminChatMobile() {
@@ -5419,9 +5427,12 @@
             if (muteBtn) muteBtn.classList.add('hidden');
 
             // Show chat interface
-            document.getElementById('admin-chat-placeholder').style.display = 'none';
+            document.getElementById('admin-chat-placeholder').classList.add('hidden');
             document.getElementById('admin-chat-interface').classList.remove('hidden');
             document.getElementById('admin-chat-interface').classList.add('flex');
+
+            // Mobile view handling
+            openAdminChatMobile();
 
             // Load messages
             loadAdminGroupMessages('cr_group');
@@ -5464,9 +5475,12 @@
             }
 
             // Show chat interface
-            document.getElementById('admin-chat-placeholder').style.display = 'none';
+            document.getElementById('admin-chat-placeholder').classList.add('hidden');
             document.getElementById('admin-chat-interface').classList.remove('hidden');
             document.getElementById('admin-chat-interface').classList.add('flex');
+
+            // Mobile view handling
+            openAdminChatMobile();
 
             // Load messages
             loadAdminGroupMessages('global_chat');
