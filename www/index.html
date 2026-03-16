@@ -343,6 +343,89 @@
                 padding-bottom: 0.75rem !important;
                 font-size: 0.8rem !important;
             }
+
+            /* New Selection Row */
+            .mobile-selection-row {
+                padding: 4px 0;
+            }
+
+            .select-trigger {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                background: #f3f4f6;
+                border: 2px solid #000;
+                border-radius: 9999px;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                white-space: nowrap;
+                transition: all 0.2s;
+            }
+
+            .dark .select-trigger {
+                background: #18181b;
+                border-color: #fff;
+            }
+
+            .select-trigger:active {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            /* File Previews */
+            .file-preview-item {
+                width: 48px;
+                height: 48px;
+                border-radius: 8px;
+                overflow: hidden;
+                border: 1px solid #e5e7eb;
+                position: relative;
+                flex-shrink: 0;
+            }
+            
+            .dark .file-preview-item {
+                border-color: #3f3f46;
+            }
+
+            .file-preview-item img, .file-preview-item video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            /* Segmented Layout Control */
+            .layout-control-group {
+                display: flex;
+                background: #f3f4f6;
+                padding: 4px;
+                border-radius: 12px;
+                border: 2px solid #000;
+            }
+
+            .dark .layout-control-group {
+                background: #18181b;
+                border-color: #fff;
+            }
+
+            .layout-btn-active {
+                background: #000 !important;
+                color: #fff !important;
+            }
+
+            .dark .layout-btn-active {
+                background: #fff !important;
+                color: #000 !important;
+            }
         }
         .video-progress-bar::after {
             content: '';
@@ -1162,58 +1245,55 @@
                             placeholder="Write the details here..."></textarea>
                     </div>
 
-                    <!-- NEW: Media Upload Section (Condensed) -->
-                    <div class="border-2 border-black dark:border-white p-2">
-                        <div class="flex items-center justify-between mb-2">
-                            <label class="text-[10px] font-bold uppercase opacity-60">Media & Layout</label>
-                            <div class="flex gap-4">
-                                <button type="button" onclick="document.getElementById('nFiles').click()" class="flex items-center gap-1 text-[10px] font-bold uppercase">
-                                    <i data-lucide="image" class="w-4 h-4"></i> Add
+                    <!-- NEW: Media Upload Section (Condensed & Icon-Centric) -->
+                    <div class="border-2 border-black dark:border-white p-3 mobile-compact-card">
+                        <label class="text-[10px] font-bold uppercase opacity-60 block mb-2">Media & Layout</label>
+                        <div class="flex items-center gap-3">
+                            <!-- Add Button -->
+                            <button type="button" onclick="document.getElementById('nFiles').click()" 
+                                class="w-12 h-12 flex-shrink-0 flex items-center justify-center border-2 border-black dark:border-white rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors">
+                                <i data-lucide="image" class="w-5 h-5"></i>
+                            </button>
+
+                            <!-- Previews Area -->
+                            <div id="file-previews" class="flex-1 flex gap-2 overflow-x-auto no-scrollbar py-1">
+                                <div class="w-12 h-12 border border-dashed border-gray-300 dark:border-zinc-700 rounded-lg flex items-center justify-center opacity-30">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                </div>
+                            </div>
+
+                            <!-- Layout Segmented Control -->
+                            <div class="layout-control-group flex-shrink-0">
+                                <input type="hidden" id="nLayout" value="grid">
+                                <button type="button" onclick="setNoticeLayout('single')" id="layout-btn-single" class="p-1.5 rounded-lg transition-colors opacity-40">
+                                    <i data-lucide="list" class="w-4 h-4"></i>
                                 </button>
-                                <select id="nLayout"
-                                    class="bg-transparent border-b-2 border-black dark:border-white text-[10px] font-bold uppercase outline-none cursor-pointer">
-                                    <option value="grid">Grid (Def)</option>
-                                    <option value="hero">Hero</option>
-                                    <option value="masonry">Flow</option>
-                                    <option value="single">List</option>
-                                </select>
+                                <button type="button" onclick="setNoticeLayout('grid')" id="layout-btn-grid" class="p-1.5 rounded-lg transition-colors layout-btn-active">
+                                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                                </button>
                             </div>
                         </div>
 
-                        <input type="file" id="nFiles" multiple accept="image/*,video/*" class="hidden" />
+                        <input type="file" id="nFiles" multiple accept="image/*,video/*" class="hidden" onchange="updateFilePreviews(this)" />
                         
                         <!-- Progress Bar (Smaller) -->
-                        <div id="upload-progress-container" class="hidden">
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 h-1">
+                        <div id="upload-progress-container" class="hidden mt-2">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 h-1 rounded-full overflow-hidden">
                                 <div id="upload-progress-bar" class="bg-blue-600 h-1" style="width: 0%"></div>
                             </div>
-                            <p id="upload-status-text" class="text-[8px] mt-0.5 font-mono">Uploading...</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 mobile-grid-2x2 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-[9px] font-bold uppercase mb-1 opacity-60">Section</label>
+                    <!-- Target Selection Row -->
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-bold uppercase opacity-60">Target & Category</label>
+                        <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar mobile-selection-row">
                             <div id="nSection-container"></div>
-                        </div>
-                        <div>
-                            <label class="block text-[9px] font-bold uppercase mb-1 opacity-60">Dept</label>
                             <div id="nDept-container"></div>
-                        </div>
-                        <div>
-                            <label class="block text-[9px] font-bold uppercase mb-1 opacity-60">Sem</label>
                             <div id="nSem-container"></div>
-                        </div>
-                        <div>
-                            <label class="block text-[9px] font-bold uppercase mb-1 opacity-60">Category</label>
                             <div id="nType-container"></div>
+                            <div id="nSubject-container"></div>
                         </div>
-                    </div>
-
-                    <!-- Subject Selection (Condensed) -->
-                    <div>
-                        <label class="block text-[9px] font-bold uppercase mb-1 opacity-60">Subject (Optional)</label>
-                        <div id="nSubject-container"></div>
                     </div>
 
                     <div class="pt-4">
@@ -2181,8 +2261,8 @@
             }
 
             const finalValue = initialValue || (options.length > 0 ? options[0].val : "");
-            const selectedOpt = options.find(o => o.val === initialValue) || options[0];
-            const displayLabel = initialValue ? (selectedOpt ? selectedOpt.label : placeholder) : placeholder;
+            const selectedOpt = options.find(o => o.val === finalValue);
+            const displayLabel = selectedOpt ? selectedOpt.label : placeholder;
 
             // Store options in data attribute as JSON string
             container.dataset.options = JSON.stringify(options);
@@ -2190,10 +2270,50 @@
             container.innerHTML = `
                 <input type="hidden" id="${inputId}" value="${finalValue}">
                 <div class="select-trigger" onclick="openSelectionModal('${inputId}', '${placeholder}')">
-                    <span id="label-${inputId}" class="truncate">${displayLabel}</span>
-                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    <span id="label-${inputId}" class="truncate max-w-[80px]">${displayLabel}</span>
+                    <i data-lucide="chevron-down" class="w-3 h-3 opacity-50"></i>
                 </div>
             `;
+            lucide.createIcons();
+        }
+
+        function setNoticeLayout(layout) {
+            document.getElementById('nLayout').value = layout;
+            const btnSingle = document.getElementById('layout-btn-single');
+            const btnGrid = document.getElementById('layout-btn-grid');
+            if (layout === 'single') {
+                btnSingle.classList.add('layout-btn-active');
+                btnSingle.classList.remove('opacity-40');
+                btnGrid.classList.remove('layout-btn-active');
+                btnGrid.classList.add('opacity-40');
+            } else {
+                btnGrid.classList.add('layout-btn-active');
+                btnGrid.classList.remove('opacity-40');
+                btnSingle.classList.remove('layout-btn-active');
+                btnSingle.classList.add('opacity-40');
+            }
+        }
+
+        function updateFilePreviews(input) {
+            const container = document.getElementById('file-previews');
+            container.innerHTML = "";
+            if (!input.files || input.files.length === 0) {
+                container.innerHTML = `<div class="w-10 h-10 border border-dashed border-gray-300 dark:border-zinc-700 rounded-lg flex items-center justify-center opacity-30"><i data-lucide="plus" class="w-4 h-4"></i></div>`;
+                lucide.createIcons();
+                return;
+            }
+            Array.from(input.files).forEach(file => {
+                const item = document.createElement('div');
+                item.className = "file-preview-item";
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    item.appendChild(img);
+                } else {
+                    item.innerHTML = `<div class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-zinc-800"><i data-lucide="video" class="w-4 h-4 text-blue-500"></i></div>`;
+                }
+                container.appendChild(item);
+            });
             lucide.createIcons();
         }
 
