@@ -1813,6 +1813,39 @@
                         </div>
                     </div>
                 </div>
+                <!-- Offline & Sync Section -->
+                <div
+                    class="p-8 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] mt-8">
+                    <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                        <i data-lucide="database" class="w-5 h-5"></i> Offline Support (Beta)
+                    </h3>
+
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <p class="font-bold uppercase text-sm text-amber-600 dark:text-amber-500">Offline Persistence</p>
+                            <p class="text-[10px] opacity-60">Save notices & data for when you have no signal</p>
+                        </div>
+                        <div
+                            class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggleOffline" id="togglePersistence" checked
+                                onclick="updatePersistenceSetting(this.checked)"
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300" />
+                            <label for="togglePersistence"
+                                class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-black/5 dark:bg-white/5 p-4 rounded-lg flex-wrap gap-4">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-bold uppercase opacity-50">Local Cache Size</span>
+                            <span id="offline-cache-size" class="text-lg font-black font-mono">Calculating...</span>
+                        </div>
+                        <button onclick="clearSystemCache(event)" 
+                            class="px-4 py-2 border-2 border-red-500 text-red-500 font-bold uppercase text-[10px] hover:bg-red-500 hover:text-white transition-all flex items-center gap-2">
+                            <i data-lucide="trash-2" class="w-3 h-3"></i> Clear Cache
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Website Management Tab -->
@@ -2160,19 +2193,12 @@
                                     Rules...</div>
                             </div>
                         </div>
-
+                    </div>
                 </div>
             </div>
+        </main>
     </div>
-
-    </main>
-    </div>
-    </div>
-
-
-
-    </main>
-    </div>
+</div>
 
     <script>
         const firebaseConfig = {
@@ -2188,10 +2214,14 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        db.enablePersistence().catch(err => {
-            if (err.code == 'failed-precondition') console.warn('Multiple tabs open, persistence disabled');
-            else if (err.code == 'unimplemented') console.warn('Browser does not support persistence');
-        });
+
+        // Check if persistence is allowed by user
+        if (localStorage.getItem('persistence_enabled') !== 'false') {
+            db.enablePersistence({ synchronizeTabs: true }).catch(err => {
+                if (err.code == 'failed-precondition') console.warn('Multiple tabs open, persistence disabled');
+                else if (err.code == 'unimplemented') console.warn('Browser does not support persistence');
+            });
+        }
         const rtdb = firebase.database();
 
         const ADMIN_EMAIL = "earnmoney6125@gmail.com";
@@ -3963,7 +3993,50 @@
                     document.getElementById('api_cloud_preset').value = apiKeys.cloudPreset || '';
                 }
             });
+            // Device Local Settings
+            const persistCheck = document.getElementById('togglePersistence');
+            if (persistCheck) persistCheck.checked = (localStorage.getItem('persistence_enabled') !== 'false');
+            updateCacheSizeDisplay();
         }
+
+        function updatePersistenceSetting(val) {
+            localStorage.setItem('persistence_enabled', val);
+            showToast(val ? "Offline mode will be active on next start." : "Offline mode disabled. Restart to apply.");
+        }
+
+        async function updateCacheSizeDisplay() {
+            const sizeEl = document.getElementById('offline-cache-size');
+            if (!sizeEl) return;
+            try {
+                if (navigator.storage && navigator.storage.estimate) {
+                    const estimate = await navigator.storage.estimate();
+                    const usedMB = (estimate.usage / (1024 * 1024)).toFixed(2);
+                    sizeEl.innerText = `${usedMB} MB`;
+                } else {
+                    sizeEl.innerText = 'Unknown';
+                }
+            } catch (e) { sizeEl.innerText = 'Error'; }
+        }
+
+        async function clearSystemCache(e) {
+            if (!confirm("Are you sure? This will delete all offline data. You will need internet to see notices again.")) return;
+            try {
+                // Determine active button
+                const btn = e ? e.target : document.activeElement;
+                if (btn) btn.innerText = "CLEARING...";
+                
+                await db.terminate();
+                await db.clearPersistence();
+                
+                showToast("Cache cleared! Refreshing...");
+                setTimeout(() => location.reload(), 1500);
+            } catch (err) {
+                console.error(err);
+                showToast("Failed to clear cache. Try restarting.");
+                setTimeout(() => location.reload(), 2000);
+            }
+        }
+
 
         async function toggleStudentGoogleOnly(val) {
             try {
@@ -5370,6 +5443,8 @@
             document.getElementById('tab-chat').classList.add('hidden');
             document.getElementById('tab-website').classList.add('hidden');
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
+
+            if (tab === 'settings') updateCacheSizeDisplay();
 
             if (tab === 'users') loadUsers();
             if (tab === 'categories') loadCategories();
