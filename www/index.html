@@ -1042,11 +1042,30 @@
                     <!-- Attachments will be loaded here -->
                 </div>
 
-                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                    <p id="attachments-count" class="text-xs font-mono opacity-60"></p>
-                    <button onclick="closeAttachmentsModal()"
-                        class="px-6 py-2 bg-black text-white dark:bg-white dark:text-black font-bold uppercase text-sm hover:opacity-80 transition-opacity">Done</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Growth User List Modal -->
+    <div id="growth-users-modal" class="fixed inset-0 z-[250] modal-backdrop hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-900 border-4 border-black dark:border-white w-full max-w-md shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.1)] flex flex-col max-h-[80vh]">
+            <div class="p-4 border-b-2 border-black dark:border-white flex items-center justify-between">
+                <div>
+                    <h3 id="growth-modal-title" class="text-xl font-black uppercase italic">New Registrations</h3>
+                    <p class="text-[9px] font-bold uppercase opacity-50">Audit of account creation IDs</p>
+                </div>
+                <button onclick="closeGrowthModal()" class="p-2 border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            
+            <div id="growth-user-list" class="flex-1 overflow-y-auto p-1">
+                <!-- User list dynamically injected here -->
+            </div>
+
+            <div class="p-4 border-t-2 border-black dark:border-white bg-gray-50 dark:bg-zinc-800">
+                <button onclick="closeGrowthModal()" class="w-full py-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase text-xs tracking-widest">Done</button>
             </div>
         </div>
     </div>
@@ -1122,6 +1141,12 @@
                 </div>
 
                 <nav class="space-y-2 flex-1 overflow-x-hidden overflow-y-auto pr-2 custom-scrollbar min-w-[200px]">
+                    <button onclick="switchTab('dashboard')" id="btn-dashboard" title="Dashboard"
+                        class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 shrink-0"></i>
+                        <span
+                            class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">Dashboard</span>
+                    </button>
                     <button onclick="switchTab('create')" id="btn-create" title="Create Notice"
                         class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
                         <i data-lucide="plus-square" class="w-5 h-5 shrink-0"></i>
@@ -1232,6 +1257,152 @@
                 <span class="font-bold uppercase tracking-widest text-sm">Admin Panel</span>
                 <button onclick="toggleSidebar()"><i data-lucide="menu" class="w-6 h-6"></i></button>
             </div>
+
+            <!-- Dashboard Tab -->
+            <div class="tab-content hidden animate-fade-in p-2 md:p-12 mb-20" id="tab-dashboard">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <h1 class="text-4xl font-black dark:text-white uppercase tracking-tighter">System Dashboard</h1>
+                        <p class="text-xs font-bold uppercase opacity-50">Monitoring Notice Board Ecosystem</p>
+                    </div>
+                    <div class="flex items-center gap-2 bg-gray-100 dark:bg-zinc-900 p-2 rounded-lg">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <span class="text-[10px] font-bold uppercase opacity-70">Live Updates Active</span>
+                    </div>
+                </div>
+
+                <!-- Bento Grid Metrics (Compact & High-Density) -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
+                    <!-- Total Notices -->
+                    <div class="p-4 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-transform">
+                        <div class="flex items-center justify-between mb-1 opacity-50">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                            <span class="text-[8px] font-bold uppercase">Notices</span>
+                        </div>
+                        <div id="dash-total-notices" class="text-2xl font-black font-mono">...</div>
+                        <p class="text-[8px] uppercase font-bold opacity-30 mt-1">Total Hub</p>
+                    </div>
+
+                    <!-- Verified Teachers -->
+                    <div class="p-4 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                        <div class="flex items-center justify-between mb-1 opacity-50">
+                            <i data-lucide="briefcase" class="w-4 h-4"></i>
+                            <span class="text-[8px] font-bold uppercase">Teachers</span>
+                        </div>
+                        <div id="dash-total-teachers" class="text-2xl font-black font-mono text-emerald-600">...</div>
+                        <p class="text-[8px] uppercase font-bold opacity-30 mt-1">Verified</p>
+                    </div>
+
+                    <!-- Students -->
+                    <div class="p-4 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                        <div class="flex items-center justify-between mb-1 opacity-50">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                            <span class="text-[8px] font-bold uppercase">Students</span>
+                        </div>
+                        <div id="dash-total-students" class="text-2xl font-black font-mono text-blue-600">...</div>
+                        <p class="text-[8px] uppercase font-bold opacity-30 mt-1">Onboarded</p>
+                    </div>
+
+                    <!-- Chat Support -->
+                    <div class="p-4 border-2 border-red-500 shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] text-red-600">
+                        <div class="flex items-center justify-between mb-1">
+                            <i data-lucide="message-square" class="w-4 h-4 animate-pulse"></i>
+                            <span class="text-[8px] font-bold uppercase opacity-60">Support</span>
+                        </div>
+                        <div id="dash-unread-chats" class="text-2xl font-black font-mono">0</div>
+                        <p class="text-[8px] uppercase font-bold opacity-30 mt-1">Unread Msg</p>
+                    </div>
+                </div>
+
+                <!-- User Growth Monitor (New Feature Card) -->
+                <div class="mb-8 p-6 bg-zinc-900 text-white rounded-2xl border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)]">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="text-xl font-black uppercase tracking-tight italic">User Growth Monitor</h3>
+                            <p class="text-[10px] uppercase font-bold opacity-50 italic">New account activity audits</p>
+                        </div>
+                        <div class="bg-zinc-800 p-1 rounded-xl flex gap-1 border border-zinc-700">
+                            <button onclick="showGrowthUsers('today')" class="px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter hover:bg-zinc-700 transition-colors">Audit Today</button>
+                            <button onclick="showGrowthUsers('week')" class="px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter hover:bg-zinc-700 transition-colors">Audit Week</button>
+                            <button onclick="showGrowthUsers('month')" class="px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter hover:bg-zinc-700 transition-colors">Audit Month</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center p-4 bg-zinc-800 rounded-xl border border-zinc-700 hover:scale-[1.02] transition-transform cursor-pointer" onclick="showGrowthUsers('today')">
+                            <p id="dash-growth-today" class="text-3xl font-black text-emerald-400">0</p>
+                            <p class="text-[8px] font-bold uppercase opacity-40 mt-1">Today</p>
+                        </div>
+                        <div class="text-center p-4 bg-zinc-800 rounded-xl border border-zinc-700 hover:scale-[1.02] transition-transform cursor-pointer" onclick="showGrowthUsers('week')">
+                            <p id="dash-growth-week" class="text-3xl font-black text-blue-400">0</p>
+                            <p class="text-[8px] font-bold uppercase opacity-40 mt-1">This Week</p>
+                        </div>
+                        <div class="text-center p-4 bg-zinc-800 rounded-xl border border-zinc-700 hover:scale-[1.02] transition-transform cursor-pointer" onclick="showGrowthUsers('month')">
+                            <p id="dash-growth-month" class="text-3xl font-black text-purple-400">0</p>
+                            <p class="text-[8px] font-bold uppercase opacity-40 mt-1">This Month</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Pending Items Monitor -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <h3 class="text-sm font-bold uppercase tracking-widest border-l-4 border-black dark:border-white pl-4 mb-4">Urgent Attention</h3>
+                        
+                        <!-- Teacher Approvals Card -->
+                        <div onclick="switchTab('teachers')" class="cursor-pointer group p-5 bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-600 dark:border-amber-500 rounded-lg flex items-center justify-between transition-all hover:shadow-lg">
+                            <div class="flex items-center gap-4">
+                                <div class="p-3 bg-amber-600 text-white rounded-lg">
+                                    <i data-lucide="user-check" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold uppercase text-sm">Teacher Verification</h4>
+                                    <p class="text-xs opacity-70">Review and approve new teacher registrations</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <span id="dash-pending-teachers" class="text-2xl font-black text-amber-600">...</span>
+                                <span class="text-[8px] font-bold uppercase opacity-60">Pending</span>
+                            </div>
+                        </div>
+
+                        <!-- System Health Card -->
+                        <div class="p-6 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                            <h4 class="text-xs font-bold uppercase mb-4 opacity-50">System Monitoring</h4>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="wifi" class="w-4 h-4 text-emerald-500"></i>
+                                        <span class="text-xs font-bold uppercase">Firebase RTDB</span>
+                                    </div>
+                                    <span class="text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded uppercase">Connected</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="hard-drive" class="w-4 h-4 text-blue-500"></i>
+                                        <span class="text-xs font-bold uppercase">Firestore Cache</span>
+                                    </div>
+                                    <span id="dash-cache-size" class="text-[10px] font-mono font-bold opacity-60">Calculating...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold uppercase tracking-widest border-l-4 border-black dark:border-white pl-4 mb-4">Quick Actions</h3>
+                        <button onclick="switchTab('create')" class="w-full p-4 border-2 border-black dark:border-white font-bold uppercase text-xs flex items-center gap-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Post New Notice
+                        </button>
+                        <button onclick="switchTab('chat')" class="w-full p-4 border-2 border-black dark:border-white font-bold uppercase text-xs flex items-center gap-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i> Reply to Messages
+                        </button>
+                        <button onclick="switchTab('website')" class="w-full p-4 border-2 border-black dark:border-white font-bold uppercase text-xs flex items-center gap-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                            <i data-lucide="settings-2" class="w-4 h-4"></i> Access Controls
+                        </button>
+                    </div>
+                </div>
+            </div>
+
 
             <div class="tab-content hidden animate-fade-in p-2 md:p-12 mb-20" id="tab-create">
                 <h1 class="text-3xl font-black mb-4 dark:text-white uppercase tracking-tighter mobile-compact-header">Post New Notice</h1>
@@ -2280,6 +2451,7 @@
                 currentUser = user; // Set for CR Group Chat
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
+                switchTab('dashboard');
                 ensureDefaultCategories();
                 loadNotices();
                 loadSettings();
@@ -2288,6 +2460,7 @@
                 loadStructureAdmin();
                 loadTeachers();
                 loadAdminConversations();
+                loadDashboardData();
                 initStaticDropdowns();
             } else {
                 document.getElementById('login-screen').classList.remove('hidden');
@@ -4038,6 +4211,113 @@
         }
 
 
+        let dashGrowthUsers = [];
+        let currentGrowthPeriod = 'today';
+
+        function showGrowthUsers(period) {
+            currentGrowthPeriod = period;
+            const container = document.getElementById('growth-user-list');
+            if (!container) return;
+
+            const now = Date.now();
+            const MS_PER_DAY = 24 * 60 * 60 * 1000;
+            let cutoff = now - MS_PER_DAY; // Default today
+            let title = "New Users Today";
+
+            if (period === 'week') {
+                cutoff = now - (7 * MS_PER_DAY);
+                title = "New Users This Week";
+            } else if (period === 'month') {
+                cutoff = now - (30 * MS_PER_DAY);
+                title = "New Users This Month";
+            }
+
+            const filtered = dashGrowthUsers.filter(u => u.createdAt && u.createdAt > cutoff);
+            document.getElementById('growth-modal-title').innerText = `${title} (${filtered.length})`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center opacity-40 italic">No new registrations found for this period.</div>`;
+            } else {
+                container.innerHTML = filtered.map(u => `
+                    <div class="flex items-center justify-between p-3 border-b border-gray-100 dark:border-zinc-800 last:border-0 hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <img src="${u.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}`}" class="w-8 h-8 rounded-full border border-black dark:border-white overflow-hidden">
+                            <div>
+                                <p class="text-sm font-bold uppercase">${u.name}</p>
+                                <p class="text-[9px] opacity-50 font-mono">${u.roll || 'N/A'} • ${u.dept} • ${u.sem}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[9px] font-mono opacity-40">${u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}</p>
+                            <p class="text-[8px] font-bold uppercase bg-black text-white px-1 dark:bg-white dark:text-black inline-block">UID: ${u.uid ? u.uid.substring(0, 6) : '??????'}...</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('growth-users-modal').classList.remove('hidden');
+        }
+
+        function closeGrowthModal() {
+            document.getElementById('growth-users-modal').classList.add('hidden');
+        }
+
+
+        async function loadDashboardData() {
+            try {
+                // Total Notices (Aggregation query)
+                db.collection("notices").get().then(snap => {
+                    document.getElementById('dash-total-notices').innerText = snap.size;
+                });
+
+                // Total Students & Growth Calculation
+                db.collection("students").get().then(snap => {
+                    document.getElementById('dash-total-students').innerText = snap.size;
+                    
+                    dashGrowthUsers = [];
+                    snap.forEach(doc => dashGrowthUsers.push({ id: doc.id, ...doc.data() }));
+
+                    const now = Date.now();
+                    const dayCutoff = now - (24 * 60 * 60 * 1000);
+                    const weekCutoff = now - (7 * 24 * 60 * 60 * 1000);
+                    const monthCutoff = now - (30 * 24 * 60 * 60 * 1000);
+
+                    const countToday = dashGrowthUsers.filter(u => u.createdAt && u.createdAt > dayCutoff).length;
+                    const countWeek = dashGrowthUsers.filter(u => u.createdAt && u.createdAt > weekCutoff).length;
+                    const countMonth = dashGrowthUsers.filter(u => u.createdAt && u.createdAt > monthCutoff).length;
+
+                    document.getElementById('dash-growth-today').innerText = countToday;
+                    document.getElementById('dash-growth-week').innerText = countWeek;
+                    document.getElementById('dash-growth-month').innerText = countMonth;
+                });
+
+                // Total Teachers
+                db.collection("teachers").where("verified", "==", true).get().then(snap => {
+                    document.getElementById('dash-total-teachers').innerText = snap.size;
+                });
+
+                // Pending Teachers
+                db.collection("teachers").where("verified", "==", false).get().then(snap => {
+                    document.getElementById('dash-pending-teachers').innerText = snap.size;
+                });
+
+                // Unread Chats
+                db.collection("conversations").where("adminUnread", "==", true).get().then(snap => {
+                    document.getElementById('dash-unread-chats').innerText = snap.size;
+                });
+
+                // System Stats
+                updateCacheSizeDisplay().then(() => {
+                    const sizeEl = document.getElementById('offline-cache-size');
+                    const dashSizeEl = document.getElementById('dash-cache-size');
+                    if (sizeEl && dashSizeEl) dashSizeEl.innerText = sizeEl.innerText;
+                });
+
+            } catch (err) {
+                console.error("Dashboard monitor error:", err);
+            }
+        }
+
         async function toggleStudentGoogleOnly(val) {
             try {
                 await db.collection("settings").doc("config").set({ studentGoogleOnly: val }, { merge: true });
@@ -5433,6 +5713,7 @@
 
         function switchTab(tab) {
             if (window.innerWidth < 768) toggleSidebar(true); // Close sidebar on mobile select
+            document.getElementById('tab-dashboard').classList.add('hidden');
             document.getElementById('tab-create').classList.add('hidden');
             document.getElementById('tab-list').classList.add('hidden');
             document.getElementById('tab-settings').classList.add('hidden');
@@ -5451,6 +5732,7 @@
             if (tab === 'teachers') loadTeachers();
             if (tab === 'subjects') loadSubjects();
             if (tab === 'list') renderAdminNotices();
+            if (tab === 'dashboard') loadDashboardData();
             if (tab === 'chat') {
                 loadAdminConversations();
                 setAdminChatTab('recent');
