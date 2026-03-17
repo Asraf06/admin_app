@@ -75,6 +75,17 @@
             backdrop-filter: blur(2px);
         }
 
+        /* Offline State */
+        .offline-indicator {
+            display: none;
+        }
+        .is-offline .offline-indicator {
+            display: flex;
+        }
+        .is-offline .is-online-only {
+            display: none !important;
+        }
+
         /* CUSTOM DROPDOWN STYLE */
         .select-trigger {
             width: 100%;
@@ -1196,6 +1207,13 @@
                             Theme</span>
                     </button>
                 </div>
+                <!-- Sidebar Footer (Connectivity Indicator) -->
+                <div class="mt-4 p-2 border-t-2 border-dashed border-gray-100 dark:border-zinc-800 offline-indicator">
+                    <div class="flex items-center gap-2 text-red-500 font-bold uppercase text-[9px] animate-pulse">
+                        <i data-lucide="wifi-off" class="w-3 h-3"></i>
+                        Offline Mode
+                    </div>
+                </div>
             </div>
         </aside>
 
@@ -1206,7 +1224,11 @@
             <!-- Mobile Toggle Header -->
             <div
                 class="md:hidden p-4 border-b-2 border-black dark:border-white flex items-center justify-between shrink-0 bg-white/90 dark:bg-black/90 z-50 sticky top-0 backdrop-blur-md">
-                <div class="w-6 h-6"></div> <!-- Spacer -->
+                <div class="w-6 h-6 flex items-center justify-center offline-indicator">
+                    <i data-lucide="wifi-off" class="w-5 h-5 text-red-500"></i>
+                </div>
+                <!-- Logic to show a simple spacer if NOT offline would be better handled with a general div that hides/shows based on is-offline -->
+                <div class="w-6 h-6 block is-online-only"></div> 
                 <span class="font-bold uppercase tracking-widest text-sm">Admin Panel</span>
                 <button onclick="toggleSidebar()"><i data-lucide="menu" class="w-6 h-6"></i></button>
             </div>
@@ -2166,6 +2188,10 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        db.enablePersistence().catch(err => {
+            if (err.code == 'failed-precondition') console.warn('Multiple tabs open, persistence disabled');
+            else if (err.code == 'unimplemented') console.warn('Browser does not support persistence');
+        });
         const rtdb = firebase.database();
 
         const ADMIN_EMAIL = "earnmoney6125@gmail.com";
@@ -3027,7 +3053,8 @@
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 opacity-50 font-mono">No matching notices found.</div>`;
+                const emptyMsg = navigator.onLine ? "No matching notices found." : "Working offline. Connect to sync recent notices.";
+                container.innerHTML = `<div class="text-center py-12 opacity-50 font-mono">${emptyMsg}</div>`;
                 return;
             }
 
@@ -6880,6 +6907,37 @@
                 });
             }
         });
+
+        // Smart Connectivity Management
+        function refreshAllData() {
+            if (!currentUser) return;
+            loadNotices();
+            loadSettings();
+            loadSubjects();
+            loadCategories();
+            loadStructureAdmin();
+            loadTeachers();
+            loadAdminConversations();
+            if (typeof showToast === 'function') showToast("⚡ Syncing data with server...");
+        }
+
+        window.addEventListener('online', () => {
+            document.body.classList.remove('is-offline');
+            refreshAllData();
+            if (typeof showCustomAlert === 'function') {
+                showToast("✅ Internet connected. Data synced.");
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            document.body.classList.add('is-offline');
+            if (typeof showToast === 'function') showToast("⚠️ Working offline");
+        });
+
+        // Initial connection check
+        if (!navigator.onLine) {
+            document.body.classList.add('is-offline');
+        }
     </script>
 </body>
 
