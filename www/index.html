@@ -800,7 +800,7 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-bold uppercase mb-1">Section</label>
+                        <label class="block text-xs font-bold uppercase mb-1">Batch</label>
                         <div id="editSubSection-container"></div>
                     </div>
                     <div>
@@ -890,7 +890,7 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase mb-1">Section</label>
+                            <label class="block text-xs font-bold uppercase mb-1">Batch</label>
                             <div id="editUserSection-container"></div>
                         </div>
                         <div>
@@ -966,7 +966,7 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase mb-1">Section</label>
+                            <label class="block text-xs font-bold uppercase mb-1">Batch</label>
                             <div id="editSection-container"></div>
                         </div>
                         <div>
@@ -1199,6 +1199,12 @@
                             class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">Chats</span>
                         <span id="admin-chat-badge"
                             class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-600 text-white text-[10px] px-1.5 rounded-full hidden">0</span>
+                    </button>
+                    <button onclick="switchTab('app-releases')" id="btn-app-releases" title="App Releases"
+                        class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
+                        <i data-lucide="smartphone" class="w-5 h-5 shrink-0 text-purple-600"></i>
+                        <span
+                            class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">App Releases</span>
                     </button>
                     <button onclick="switchTab('website')" id="nav-website" title="Website"
                         class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
@@ -2086,7 +2092,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
                                 <!-- Sections -->
                                 <div>
-                                    <h3 class="font-bold uppercase mb-4 text-xs opacity-60">Manage Sections (Batches)
+                                    <h3 class="font-bold uppercase mb-4 text-xs opacity-60">Manage Batches (Batches)
                                     </h3>
                                     <div
                                         class="mb-4 p-4 border-2 border-black dark:border-white bg-gray-50 dark:bg-zinc-900">
@@ -2364,9 +2370,134 @@
                                     Rules...</div>
                             </div>
                         </div>
+                    </main>
+                </div>
+            </div>
+
+            <!-- ======================= APP RELEASES TAB ======================= -->
+            <div class="tab-content hidden animate-fade-in p-2 md:p-12 mb-20" id="tab-app-releases">
+                <!-- Header -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-black dark:text-white uppercase tracking-tighter flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                                <i data-lucide="smartphone" class="w-6 h-6 text-white"></i>
+                            </div>
+                            App Releases
+                        </h1>
+                        <p class="text-xs font-bold uppercase opacity-50 mt-1 ml-[60px]">Upload & manage APK versions for the student app</p>
+                    </div>
+                    <button onclick="loadApkReleases()" class="px-4 py-2 border-2 border-black dark:border-white font-bold uppercase text-xs flex items-center gap-2 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all rounded-lg">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl">
+
+                    <!-- Upload New APK Card -->
+                    <div class="lg:col-span-2 border-4 border-black dark:border-white p-6 bg-white dark:bg-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)]">
+                        <h2 class="font-black uppercase text-xl flex items-center gap-3 mb-6">
+                            <div class="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center">
+                                <i data-lucide="upload" class="w-4 h-4 text-white"></i>
+                            </div>
+                            Upload New APK Release
+                        </h2>
+
+                        <form onsubmit="handleApkUpload(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold uppercase opacity-60 mb-1 block">Version Number *</label>
+                                    <input type="text" id="apk-version" required placeholder="e.g. 2.1.0"
+                                        class="w-full p-3 border-2 border-black dark:border-white bg-transparent font-mono text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold uppercase opacity-60 mb-1 block">Release Channel</label>
+                                    <select id="apk-channel" class="w-full p-3 border-2 border-black dark:border-white bg-transparent font-mono text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+                                        <option value="current">Current (Newest)</option>
+                                        <option value="old">Older / Stable</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-bold uppercase opacity-60 mb-1 block">Release Notes</label>
+                                <textarea id="apk-notes" rows="2" placeholder="What's new in this version..."
+                                    class="w-full p-3 border-2 border-black dark:border-white bg-transparent font-mono text-sm focus:ring-2 focus:ring-purple-500 outline-none resize-none"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-bold uppercase opacity-60 mb-1 block">APK File *</label>
+                                <div class="relative">
+                                    <input type="file" id="apk-file-input" accept=".apk" required
+                                        onchange="updateApkFilePreview(this)"
+                                        class="w-full p-3 border-2 border-dashed border-gray-400 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-950 font-mono text-sm file:mr-4 file:py-2 file:px-4 file:border-2 file:border-black dark:file:border-white file:font-bold file:uppercase file:text-xs file:bg-transparent file:cursor-pointer hover:file:bg-black hover:file:text-white dark:hover:file:bg-white dark:hover:file:text-black file:transition-all cursor-pointer">
+                                </div>
+                                <div id="apk-file-info" class="hidden mt-2 p-3 bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800 flex items-center gap-3">
+                                    <i data-lucide="file-archive" class="w-5 h-5 text-purple-600 shrink-0"></i>
+                                    <div class="flex-1 min-w-0">
+                                        <p id="apk-file-name" class="font-bold text-sm truncate"></p>
+                                        <p id="apk-file-size" class="text-[10px] font-mono opacity-60"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Upload Progress -->
+                            <div id="apk-upload-progress" class="hidden">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span id="apk-upload-status" class="text-xs font-bold uppercase opacity-60">Uploading...</span>
+                                    <span id="apk-upload-percent" class="text-xs font-mono font-bold text-purple-600">0%</span>
+                                </div>
+                                <div class="w-full h-3 bg-gray-200 dark:bg-zinc-800 border border-black dark:border-white overflow-hidden">
+                                    <div id="apk-upload-bar" class="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-300" style="width:0%"></div>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="btn-upload-apk"
+                                class="w-full py-4 bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-widest text-sm border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(147,51,234,0.5)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                                Upload & Publish APK
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Current Release Card -->
+                    <div class="border-4 border-black dark:border-white p-5 bg-white dark:bg-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)]">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
+                                <i data-lucide="star" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black uppercase text-lg">Current Release</h3>
+                                <p class="text-[10px] uppercase font-bold opacity-50">Newest version for users</p>
+                            </div>
+                        </div>
+                        <div id="apk-current-display">
+                            <div class="p-8 text-center border-2 border-dashed border-gray-300 dark:border-zinc-700 opacity-50 font-mono text-sm">
+                                Loading...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Old Release Card -->
+                    <div class="border-4 border-black dark:border-white p-5 bg-white dark:bg-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)]">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 rounded-lg bg-gray-500 flex items-center justify-center">
+                                <i data-lucide="archive" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black uppercase text-lg">Older / Stable</h3>
+                                <p class="text-[10px] uppercase font-bold opacity-50">Fallback version</p>
+                            </div>
+                        </div>
+                        <div id="apk-old-display">
+                            <div class="p-8 text-center border-2 border-dashed border-gray-300 dark:border-zinc-700 opacity-50 font-mono text-sm">
+                                Loading...
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </main>
     </div>
 </div>
@@ -2423,7 +2554,7 @@
         let adminChatsData = [];
 
         let SECTIONS = [
-            { val: 'all', label: 'All Sections / Batches' },
+            { val: 'all', label: 'All Batches / Batches' },
             { val: '23-24', label: '23-24' }
         ];
 
@@ -2596,47 +2727,47 @@
         }
 
         function initStaticDropdowns() {
-            initCustomDropdown('nSection-container', 'nSection', SECTIONS, 'Select Section', updateSubjectDropdown);
+            initCustomDropdown('nSection-container', 'nSection', SECTIONS, 'Select Batch', updateSubjectDropdown);
             initCustomDropdown('nDept-container', 'nDept', DEPARTMENTS, 'Select Dept', updateSubjectDropdown);
             initCustomDropdown('nSem-container', 'nSem', SEMESTERS, 'Select Sem', updateSubjectDropdown);
 
             // Advanced Filter Dropdowns
-            initCustomDropdown('filterSection-container', 'filterSection', SECTIONS, 'All Sections', filterAdminNotices);
+            initCustomDropdown('filterSection-container', 'filterSection', SECTIONS, 'All Batches', filterAdminNotices);
             initCustomDropdown('filterDept-container', 'filterDept', DEPARTMENTS, 'All Depts', filterAdminNotices);
             initCustomDropdown('filterSem-container', 'filterSem', SEMESTERS, 'All Sems', filterAdminNotices);
 
             // Edit Notice Dropdowns
-            initCustomDropdown('editSection-container', 'editSection', SECTIONS, 'Select Section', updateEditSubjectDropdown);
+            initCustomDropdown('editSection-container', 'editSection', SECTIONS, 'Select Batch', updateEditSubjectDropdown);
             initCustomDropdown('editDept-container', 'editDept', DEPARTMENTS, 'Select Dept', updateEditSubjectDropdown);
             initCustomDropdown('editSem-container', 'editSem', SEMESTERS, 'Select Sem', updateEditSubjectDropdown);
 
             // User Filter Dropdowns
-            initCustomDropdown('filterUserSection-container', 'filterUserSection', SECTIONS, 'All Sections', filterUsers);
+            initCustomDropdown('filterUserSection-container', 'filterUserSection', SECTIONS, 'All Batches', filterUsers);
             initCustomDropdown('filterUserDept-container', 'filterUserDept', DEPARTMENTS, 'All Depts', filterUsers);
             initCustomDropdown('filterUserSem-container', 'filterUserSem', SEMESTERS, 'All Sems', filterUsers);
 
             // Subject Management
-            initCustomDropdown('sSection-container', 'sSection', SECTIONS, 'Select Section');
+            initCustomDropdown('sSection-container', 'sSection', SECTIONS, 'Select Batch');
             initCustomDropdown('sDept-container', 'sDept', DEPARTMENTS, 'Select Dept');
             initCustomDropdown('sSem-container', 'sSem', SEMESTERS, 'Select Sem');
 
             // Manage Teacher Assignments
-            initCustomDropdown('mt-section-container', 'mt-section', SECTIONS, 'Select Section');
+            initCustomDropdown('mt-section-container', 'mt-section', SECTIONS, 'Select Batch');
             initCustomDropdown('mt-dept-container', 'mt-dept', DEPARTMENTS, 'Select Dept');
             initCustomDropdown('mt-sem-container', 'mt-sem', SEMESTERS, 'Select Sem');
 
             // Edit Subject
-            initCustomDropdown('editSubSection-container', 'editSubSection', SECTIONS, 'Select Section');
+            initCustomDropdown('editSubSection-container', 'editSubSection', SECTIONS, 'Select Batch');
             initCustomDropdown('editSubDept-container', 'editSubDept', DEPARTMENTS, 'Select Dept');
             initCustomDropdown('editSubSem-container', 'editSubSem', SEMESTERS, 'Select Sem');
 
             // User Edit
-            initCustomDropdown('editUserSection-container', 'editUserSection', SECTIONS, 'Select Section');
+            initCustomDropdown('editUserSection-container', 'editUserSection', SECTIONS, 'Select Batch');
             initCustomDropdown('editUserDept-container', 'editUserDept', DEPARTMENTS, 'Select Dept');
             initCustomDropdown('editUserSem-container', 'editUserSem', SEMESTERS, 'Select Sem');
 
             // Website Management - Board Rolls
-            initCustomDropdown('rollSection-container', 'rollSection', SECTIONS, 'Select Section', refreshRolls);
+            initCustomDropdown('rollSection-container', 'rollSection', SECTIONS, 'Select Batch', refreshRolls);
             initCustomDropdown('rollDept-container', 'rollDept', DEPARTMENTS, 'Select Dept', refreshRolls);
             initCustomDropdown('rollSem-container', 'rollSem', SEMESTERS, 'Select Sem', refreshRolls);
         }
@@ -5713,6 +5844,14 @@
 
         function switchTab(tab) {
             if (window.innerWidth < 768) toggleSidebar(true); // Close sidebar on mobile select
+            
+            // Scroll to the top instantly after layout update
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+            }, 10);
+
             document.getElementById('tab-dashboard').classList.add('hidden');
             document.getElementById('tab-create').classList.add('hidden');
             document.getElementById('tab-list').classList.add('hidden');
@@ -5723,6 +5862,7 @@
             document.getElementById('tab-teachers').classList.add('hidden');
             document.getElementById('tab-chat').classList.add('hidden');
             document.getElementById('tab-website').classList.add('hidden');
+            document.getElementById('tab-app-releases').classList.add('hidden');
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
 
             if (tab === 'settings') updateCacheSizeDisplay();
@@ -5740,6 +5880,9 @@
             if (tab === 'website') {
                 loadAccessControl();
             }
+            if (tab === 'app-releases') {
+                loadApkReleases();
+            }
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-black', 'text-white', 'dark:bg-white', 'dark:text-black');
@@ -5750,6 +5893,315 @@
         }
 
         function logout() { auth.signOut(); }
+
+        // =============================================
+        // APK RELEASE MANAGEMENT
+        // =============================================
+        let apkReleasesData = { current: null, old: null };
+
+        async function loadApkReleases() {
+            try {
+                const snap = await db.collection('apps_management').doc('apk_releases').get();
+                if (snap.exists) {
+                    apkReleasesData = snap.data();
+                } else {
+                    apkReleasesData = { current: null, old: null };
+                }
+            } catch (err) {
+                console.error('Failed to load APK releases:', err);
+            }
+            renderApkReleases();
+        }
+
+        function renderApkReleases() {
+            renderApkCard('apk-current-display', apkReleasesData.current, 'current');
+            renderApkCard('apk-old-display', apkReleasesData.old, 'old');
+            lucide.createIcons();
+        }
+
+        function renderApkCard(containerId, release, channel) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (!release || !release.version) {
+                container.innerHTML = `
+                    <div class="p-8 text-center border-2 border-dashed border-gray-300 dark:border-zinc-700 opacity-50 font-mono text-sm">
+                        No ${channel === 'current' ? 'current' : 'older'} release uploaded yet.
+                    </div>
+                `;
+                return;
+            }
+
+            const timestamp = release.timestamp
+                ? (release.timestamp.toDate ? release.timestamp.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : new Date(release.timestamp).toLocaleDateString())
+                : 'Unknown';
+
+            const channelColor = channel === 'current' ? 'emerald' : 'gray';
+            const channelLabel = channel === 'current' ? 'NEWEST' : 'OLDER / STABLE';
+
+            container.innerHTML = `
+                <div class="border-2 border-black dark:border-zinc-800 p-4 bg-gray-50 dark:bg-zinc-950 space-y-3">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="bg-${channelColor}-500 text-white text-[10px] font-bold px-2 py-0.5 uppercase inline-block mb-1">${channelLabel}</span>
+                            <h4 class="font-black text-xl">Version ${release.version}</h4>
+                            ${release.notes ? `<p class="text-xs opacity-70 mt-1 font-serif">${release.notes}</p>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 text-[10px] font-mono uppercase font-bold opacity-50">
+                        ${release.name ? `<span class="flex items-center gap-1"><i data-lucide="file" class="w-3 h-3"></i> ${release.name}</span>` : ''}
+                        <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${timestamp}</span>
+                    </div>
+
+                    <div class="flex gap-2 pt-2 border-t border-gray-200 dark:border-zinc-800">
+                        <a href="${release.url}" target="_blank" rel="noopener noreferrer"
+                            class="flex-1 py-2.5 bg-black text-white dark:bg-white dark:text-black font-bold uppercase text-xs flex items-center justify-center gap-2 border-2 border-black dark:border-white hover:opacity-80 transition-opacity" download>
+                            <i data-lucide="download" class="w-4 h-4"></i> Download
+                        </a>
+                        <button onclick="deleteApkRelease('${channel}')"
+                            class="px-4 py-2.5 border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-bold uppercase text-xs flex items-center gap-2 transition-all">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateApkFilePreview(input) {
+            const infoDiv = document.getElementById('apk-file-info');
+            const nameEl = document.getElementById('apk-file-name');
+            const sizeEl = document.getElementById('apk-file-size');
+
+            if (input.files && input.files.length > 0) {
+                const file = input.files[0];
+                nameEl.textContent = file.name;
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                sizeEl.textContent = `${sizeMB} MB`;
+                infoDiv.classList.remove('hidden');
+            } else {
+                infoDiv.classList.add('hidden');
+            }
+            lucide.createIcons();
+        }
+
+        // XHR upload helper for APK (returns promise with progress tracking)
+        function xhrUploadApk(url, formData, progressBar, percentText, statusText, serviceName) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+
+                xhr.upload.onprogress = (ev) => {
+                    if (ev.lengthComputable) {
+                        const pct = Math.round((ev.loaded / ev.total) * 100);
+                        progressBar.style.width = pct + '%';
+                        percentText.textContent = pct + '%';
+                        if (pct >= 100) statusText.textContent = `Processing on ${serviceName}...`;
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status === 200 || xhr.status === 201) {
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            // ImageKit response
+                            if (serviceName === 'imagekit' && data.url && data.fileId) {
+                                resolve({ url: data.url, fileId: data.fileId, service: 'imagekit' });
+                            }
+                            // Cloudinary response
+                            else if (serviceName === 'cloudinary' && data.secure_url) {
+                                resolve({ url: data.secure_url, fileId: data.public_id || '', service: 'cloudinary' });
+                            }
+                            else {
+                                reject(new Error(`Invalid ${serviceName} response`));
+                            }
+                        } catch (err) {
+                            reject(new Error(`Failed to parse ${serviceName} response`));
+                        }
+                    } else {
+                        reject(new Error(`${serviceName} upload failed with HTTP ${xhr.status}`));
+                    }
+                };
+
+                xhr.onerror = () => reject(new Error(`Network error during ${serviceName} upload`));
+
+                xhr.open('POST', url);
+                xhr.send(formData);
+            });
+        }
+
+        async function handleApkUpload(e) {
+            e.preventDefault();
+
+            const version = document.getElementById('apk-version').value.trim();
+            const channel = document.getElementById('apk-channel').value;
+            const notes = document.getElementById('apk-notes').value.trim();
+            const fileInput = document.getElementById('apk-file-input');
+            const btn = document.getElementById('btn-upload-apk');
+
+            if (!version || !fileInput.files || fileInput.files.length === 0) {
+                showCustomAlert('Missing Fields', 'Please provide a version number and select an APK file.', 'error');
+                return;
+            }
+
+            const file = fileInput.files[0];
+
+            // Validate APK extension
+            if (!file.name.toLowerCase().endsWith('.apk')) {
+                showCustomAlert('Invalid File', 'Please select a valid .apk file.', 'error');
+                return;
+            }
+
+            // Ensure we have Cloudinary keys as fallback
+            if (!apiKeys.cloudName || !apiKeys.cloudPreset) {
+                try {
+                    const configDoc = await db.collection('settings').doc('config').get();
+                    if (configDoc.exists) {
+                        const config = configDoc.data();
+                        apiKeys = {
+                            imgbb: config.imgbbKey || '',
+                            cloudName: config.cloudName || '',
+                            cloudPreset: config.cloudPreset || ''
+                        };
+                    }
+                } catch (err) {
+                    console.error('Config fetch error:', err);
+                }
+            }
+
+            // Show progress
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Uploading...';
+            lucide.createIcons();
+
+            const progressContainer = document.getElementById('apk-upload-progress');
+            const progressBar = document.getElementById('apk-upload-bar');
+            const statusText = document.getElementById('apk-upload-status');
+            const percentText = document.getElementById('apk-upload-percent');
+            progressContainer.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            percentText.textContent = '0%';
+
+            let uploadResult = null;
+            const APK_FOLDER = '/apk_releases';
+            const API_BASE = 'https://npcnoticeboard.vercel.app';
+
+            try {
+                // ─── 1️⃣ TRY IMAGEKIT FIRST (Primary) ───
+                console.log('[APK Upload] Trying ImageKit...');
+                statusText.textContent = 'Authenticating with ImageKit...';
+
+                try {
+                    const idToken = await currentUser.getIdToken();
+                    const authRes = await fetch(`${API_BASE}/api/imagekit/auth`, {
+                        headers: { 'Authorization': `Bearer ${idToken}` }
+                    });
+
+                    if (authRes.ok) {
+                        const authData = await authRes.json();
+
+                        if (authData && authData.token && authData.signature && authData.expire) {
+                            statusText.textContent = 'Uploading to ImageKit...';
+                            progressBar.style.width = '0%';
+
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            formData.append('publicKey', authData.publicKey);
+                            formData.append('signature', authData.signature);
+                            formData.append('expire', authData.expire.toString());
+                            formData.append('token', authData.token);
+                            formData.append('fileName', file.name);
+                            formData.append('useUniqueFileName', 'true');
+                            formData.append('folder', APK_FOLDER);
+
+                            uploadResult = await xhrUploadApk(
+                                'https://upload.imagekit.io/api/v1/files/upload',
+                                formData, progressBar, percentText, statusText, 'imagekit'
+                            );
+                            console.log('[APK Upload] ImageKit success:', uploadResult.url);
+                        }
+                    } else {
+                        console.warn('[APK Upload] ImageKit auth failed:', authRes.status);
+                    }
+                } catch (ikErr) {
+                    console.warn('[APK Upload] ImageKit error:', ikErr.message);
+                }
+
+                // ─── 2️⃣ FALLBACK TO CLOUDINARY (if ImageKit failed) ───
+                if (!uploadResult) {
+                    if (!apiKeys.cloudName || !apiKeys.cloudPreset) {
+                        throw new Error('Both ImageKit and Cloudinary are unavailable. Check API configuration.');
+                    }
+
+                    console.log('[APK Upload] Falling back to Cloudinary...');
+                    statusText.textContent = 'Uploading to Cloudinary...';
+                    progressBar.style.width = '0%';
+                    percentText.textContent = '0%';
+
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', apiKeys.cloudPreset);
+                    formData.append('resource_type', 'raw');
+                    formData.append('folder', 'apk_releases');
+
+                    uploadResult = await xhrUploadApk(
+                        `https://api.cloudinary.com/v1_1/${apiKeys.cloudName}/raw/upload`,
+                        formData, progressBar, percentText, statusText, 'cloudinary'
+                    );
+                    console.log('[APK Upload] Cloudinary success:', uploadResult.url);
+                }
+
+                // ─── 3️⃣ SAVE TO FIRESTORE ───
+                statusText.textContent = 'Saving to database...';
+
+                const releaseObj = {
+                    version: version,
+                    url: uploadResult.url,
+                    notes: notes || '',
+                    name: file.name,
+                    fileId: uploadResult.fileId || '',
+                    service: uploadResult.service || 'unknown',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                const updateData = {};
+                updateData[channel] = releaseObj;
+
+                await db.collection('apps_management').doc('apk_releases').set(updateData, { merge: true });
+
+                const serviceName = uploadResult.service === 'imagekit' ? 'ImageKit' : 'Cloudinary';
+                showCustomAlert('Success', `APK v${version} uploaded via ${serviceName} and published to the ${channel === 'current' ? 'Current' : 'Older/Stable'} channel!`, 'success');
+
+                // Reset form
+                e.target.reset();
+                document.getElementById('apk-file-info').classList.add('hidden');
+                loadApkReleases();
+
+            } catch (err) {
+                console.error('APK upload failed:', err);
+                showCustomAlert('Upload Failed', err.message || 'Something went wrong during the upload.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="upload-cloud" class="w-5 h-5"></i> Upload & Publish APK';
+                progressContainer.classList.add('hidden');
+                lucide.createIcons();
+            }
+        }
+
+        function deleteApkRelease(channel) {
+            const label = channel === 'current' ? 'Current (Newest)' : 'Older / Stable';
+            showCustomConfirm('Delete Release?', `This will remove the ${label} APK release. Users will no longer be able to download it.`, async () => {
+                try {
+                    const updateData = {};
+                    updateData[channel] = firebase.firestore.FieldValue.delete();
+                    await db.collection('apps_management').doc('apk_releases').update(updateData);
+                    showCustomAlert('Deleted', `${label} release removed successfully.`, 'success');
+                    loadApkReleases();
+                } catch (err) {
+                    console.error('Delete failed:', err);
+                    showCustomAlert('Error', 'Failed to delete the release: ' + err.message, 'error');
+                }
+            });
+        }
 
         function toggleSidebar(forceClose) {
             const sidebar = document.getElementById('admin-sidebar');
@@ -6146,7 +6598,7 @@
             // Initialize Dropdowns for Class Group Icons if not already done
             const container = document.getElementById('icon-dept-container');
             if (container && container.innerHTML === "") { // Only init once
-                initCustomDropdown('icon-section-container', 'iconSection', SECTIONS, 'Section', refreshAdminGroupPreview);
+                initCustomDropdown('icon-section-container', 'iconSection', SECTIONS, 'Batch', refreshAdminGroupPreview);
 
                 // Dept uses DEPARTMENTS global (if available) or fetches from DB listener
                 let deptOpts = [];
@@ -6223,7 +6675,7 @@
         function loadStructureAdmin() {
             // Load Sections
             db.collection('sections').orderBy('name', 'desc').onSnapshot(snap => {
-                SECTIONS = [{ val: 'all', label: 'All Sections / Batches' }];
+                SECTIONS = [{ val: 'all', label: 'All Batches / Batches' }];
                 const listContainer = document.getElementById('admin-section-list');
                 if (listContainer) listContainer.innerHTML = '';
                 let has2324 = false;
@@ -6296,7 +6748,7 @@
             if (!name) return;
             try {
                 const snap = await db.collection('sections').where('name', '==', name).get();
-                if (!snap.empty) { showCustomAlert("Error", "Section already exists.", "error"); return; }
+                if (!snap.empty) { showCustomAlert("Error", "Batch already exists.", "error"); return; }
                 await db.collection('sections').add({ name });
                 showCustomAlert("Success", "Section added.", "success");
                 input.value = '';
@@ -6304,7 +6756,7 @@
         }
 
         async function deleteSectionAdmin(id) {
-            showCustomConfirm("Delete Section?", "This will remove the section from selections.", async () => {
+            showCustomConfirm("Delete Batch?", "This will remove the section from selections.", async () => {
                 await db.collection('sections').doc(id).delete();
             });
         }
@@ -6344,7 +6796,7 @@
                 showCustomAlert("Processing...", "Updating section and migrating board rolls...", "info");
                 try {
                     const snap = await db.collection('sections').where('name', '==', nameUC).get();
-                    if (!snap.empty) { showCustomAlert("Error", "Section already exists.", "error"); return; }
+                    if (!snap.empty) { showCustomAlert("Error", "Batch already exists.", "error"); return; }
                     
                     // 1. Update the section name
                     await db.collection('sections').doc(id).update({ name: nameUC });
@@ -6366,7 +6818,7 @@
                         await batch.commit();
                     }
                     
-                    showCustomAlert("Success", "Section updated and board rolls migrated.", "success");
+                    showCustomAlert("Success", "Batch updated and board rolls migrated.", "success");
                 } catch (e) {
                     showCustomAlert("Error", e.message, "error");
                 }
