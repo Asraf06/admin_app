@@ -3152,6 +3152,74 @@
             initCustomDropdown('filterType-container', 'filterType', filterOptions, 'All Types', filterAdminNotices);
         }
 
+        // --- ImageKit Upload Helper (used by all upload functions) ---
+        const IMAGEKIT_API_BASE = 'https://npcnoticeboard.vercel.app';
+
+        async function uploadToImageKit(file, folder = '/uploads/admin') {
+            try {
+                if (!currentUser) {
+                    console.warn('[ImageKit] No user logged in, skipping');
+                    return null;
+                }
+
+                const idToken = await currentUser.getIdToken();
+                const authRes = await fetch(`${IMAGEKIT_API_BASE}/api/imagekit/auth`, {
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
+
+                if (!authRes.ok) {
+                    console.warn('[ImageKit] Auth failed:', authRes.status);
+                    return null;
+                }
+
+                const authData = await authRes.json();
+                if (!authData || !authData.token || !authData.signature || !authData.expire) {
+                    console.warn('[ImageKit] Auth response missing fields');
+                    return null;
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('publicKey', authData.publicKey);
+                formData.append('signature', authData.signature);
+                formData.append('expire', authData.expire.toString());
+                formData.append('token', authData.token);
+                formData.append('fileName', file.name);
+                formData.append('useUniqueFileName', 'true');
+                formData.append('folder', folder);
+
+                const uploadRes = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!uploadRes.ok) {
+                    console.warn('[ImageKit] Upload HTTP error:', uploadRes.status);
+                    return null;
+                }
+
+                const data = await uploadRes.json();
+                if (data.url && data.fileId) {
+                    const isImage = file.type.startsWith('image/');
+                    const isVideo = file.type.startsWith('video/');
+                    console.log('[ImageKit] Upload success:', data.url);
+                    return {
+                        type: isImage ? 'image' : isVideo ? 'video' : 'file',
+                        url: data.url,
+                        thumb: data.thumbnailUrl || data.url,
+                        fileId: data.fileId,
+                        service: 'imagekit'
+                    };
+                }
+
+                console.warn('[ImageKit] Upload response invalid:', data);
+                return null;
+            } catch (err) {
+                console.warn('[ImageKit] Error:', err.message);
+                return null;
+            }
+        }
+
         // --- MEDIA UPLOAD HANDLER ---
         async function handleFileUploads(files) {
             if (!files.length) return [];
@@ -3190,7 +3258,19 @@
                 statusText.innerText = `Uploading ${i + 1}/${files.length}: ${file.name}...`;
 
                 try {
-                    if (file.type.startsWith('image/')) {
+                    // 1️⃣ Try ImageKit FIRST (Primary)
+                    const ikResult = await uploadToImageKit(file, '/uploads/notices');
+                    if (ikResult) {
+                        attachments.push({
+                            type: ikResult.type,
+                            url: ikResult.url,
+                            thumb: ikResult.thumb,
+                            fileId: ikResult.fileId,
+                            service: 'imagekit'
+                        });
+                    }
+                    // 2️⃣ Fallback: ImgBB for images, Cloudinary for videos
+                    else if (file.type.startsWith('image/')) {
                         // ImgBB Upload
                         const formData = new FormData();
                         formData.append('image', file);
@@ -3684,7 +3764,19 @@
                 statusText.innerText = `Uploading ${i + 1}/${files.length}: ${file.name}...`;
 
                 try {
-                    if (file.type.startsWith('image/')) {
+                    // 1️⃣ Try ImageKit FIRST (Primary)
+                    const ikResult = await uploadToImageKit(file, '/uploads/notices');
+                    if (ikResult) {
+                        newAttachments.push({
+                            type: ikResult.type,
+                            url: ikResult.url,
+                            thumb: ikResult.thumb,
+                            fileId: ikResult.fileId,
+                            service: 'imagekit'
+                        });
+                    }
+                    // 2️⃣ Fallback: ImgBB for images, Cloudinary for videos
+                    else if (file.type.startsWith('image/')) {
                         const formData = new FormData();
                         formData.append('image', file);
                         const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKeys.imgbb}`, { method: 'POST', body: formData });
@@ -5049,27 +5141,44 @@
                 renderAdminStagingBar();
 
                 try {
-                    const formData = new FormData();
-                    formData.append('file', item.file);
-                    formData.append('upload_preset', apiKeys.cloudPreset);
-
                     const type = item.file.type.startsWith('video/') ? 'video' : 'image';
-                    const res = await fetch(`https://api.cloudinary.com/v1_1/${apiKeys.cloudName}/${type}/upload`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const data = await res.json();
 
-                    if (data.secure_url) {
+                    // 1️⃣ Try ImageKit FIRST
+                    const ikResult = await uploadToImageKit(item.file, '/uploads/chat');
+                    if (ikResult) {
                         item.status = 'done';
                         item.result = {
                             id: item.id,
-                            url: data.secure_url,
-                            type: type,
-                            thumb: type === 'video' ? (data.secure_url.replace(/\.[^/.]+$/, ".jpg")) : data.secure_url
+                            url: ikResult.url,
+                            type: ikResult.type,
+                            thumb: ikResult.thumb,
+                            fileId: ikResult.fileId,
+                            service: 'imagekit'
                         };
-                    } else {
-                        throw new Error('Upload failed');
+                    }
+                    // 2️⃣ Fallback to Cloudinary
+                    else {
+                        const formData = new FormData();
+                        formData.append('file', item.file);
+                        formData.append('upload_preset', apiKeys.cloudPreset);
+
+                        const res = await fetch(`https://api.cloudinary.com/v1_1/${apiKeys.cloudName}/${type}/upload`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await res.json();
+
+                        if (data.secure_url) {
+                            item.status = 'done';
+                            item.result = {
+                                id: item.id,
+                                url: data.secure_url,
+                                type: type,
+                                thumb: type === 'video' ? (data.secure_url.replace(/\.[^/.]+$/, ".jpg")) : data.secure_url
+                            };
+                        } else {
+                            throw new Error('Upload failed');
+                        }
                     }
 
                 } catch (e) {
@@ -7321,7 +7430,13 @@
         async function uploadChatResource(file) {
             await fetchApiKeysIfNeeded();
 
-            // VIDEO
+            // 1️⃣ Try ImageKit FIRST (Primary - works for all file types)
+            const ikResult = await uploadToImageKit(file, '/uploads/chat');
+            if (ikResult) {
+                return { type: ikResult.type, url: ikResult.url };
+            }
+
+            // 2️⃣ Fallback: VIDEO → Cloudinary
             if (file.type.startsWith('video/')) {
                 if (apiKeys.cloudName && apiKeys.cloudPreset) {
                     const fd = new FormData();
@@ -7337,8 +7452,7 @@
                 throw new Error("Video upload requires Cloudinary keys");
             }
 
-            // IMAGE
-            // 1. Try ImgBB
+            // 3️⃣ Fallback: IMAGE → ImgBB
             if (apiKeys.imgbb) {
                 try {
                     const fd = new FormData();
@@ -7349,7 +7463,7 @@
                 } catch (e) { console.warn("ImgBB fallback", e); }
             }
 
-            // 2. Try Cloudinary 
+            // 4️⃣ Fallback: IMAGE → Cloudinary
             if (apiKeys.cloudName && apiKeys.cloudPreset) {
                 const fd = new FormData();
                 fd.append('file', file);
