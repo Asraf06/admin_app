@@ -6068,6 +6068,10 @@
                             class="flex-1 py-2.5 bg-black text-white dark:bg-white dark:text-black font-bold uppercase text-xs flex items-center justify-center gap-2 border-2 border-black dark:border-white hover:opacity-80 transition-opacity" download>
                             <i data-lucide="download" class="w-4 h-4"></i> Download
                         </a>
+                        <button onclick="editApkRelease('${channel}')"
+                            class="px-4 py-2.5 border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold uppercase text-xs flex items-center gap-2 transition-all">
+                            <i data-lucide="edit-2" class="w-4 h-4"></i> Edit
+                        </button>
                         <button onclick="deleteApkRelease('${channel}')"
                             class="px-4 py-2.5 border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-bold uppercase text-xs flex items-center gap-2 transition-all">
                             <i data-lucide="trash-2" class="w-4 h-4"></i> Remove
@@ -6296,10 +6300,54 @@
             }
         }
 
+        function editApkRelease(channel) {
+            const release = apkReleases[channel];
+            if (!release) return;
+
+            const newName = prompt('Enter new APK name (e.g., Notice.apk):', release.name || '');
+            if (newName === null) return; 
+
+            const newNotes = prompt('Enter new release notes (leave blank if none):', release.notes || '');
+            if (newNotes === null) return; 
+
+            const updateData = {};
+            updateData[`${channel}.name`] = newName.trim();
+            updateData[`${channel}.notes`] = newNotes.trim();
+
+            db.collection('apps_management').doc('apk_releases').update(updateData).then(() => {
+                showCustomAlert('Success', 'APK release updated successfully.', 'success');
+                loadApkReleases();
+            }).catch(err => {
+                console.error('Edit failed:', err);
+                showCustomAlert('Error', 'Failed to edit the release: ' + err.message, 'error');
+            });
+        }
+
         function deleteApkRelease(channel) {
             const label = channel === 'current' ? 'Current (Newest)' : 'Older / Stable';
             showCustomConfirm('Delete Release?', `This will remove the ${label} APK release. Users will no longer be able to download it.`, async () => {
                 try {
+                    const release = apkReleases[channel];
+                    if (release && release.fileId && currentUser) {
+                        try {
+                            const idToken = await currentUser.getIdToken();
+                            const endpoint = release.service === 'imagekit' 
+                                ? 'https://npcnoticeboard.vercel.app/api/imagekit/delete'
+                                : (release.service === 'cloudinary' ? 'https://npcnoticeboard.vercel.app/api/cloudinary/delete' : null);
+                            
+                            if (endpoint) {
+                                await fetch(endpoint, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+                                    body: JSON.stringify({ fileId: release.fileId })
+                                });
+                            }
+                        } catch (mediaErr) {
+                            console.error('Failed to delete media from cloud storage:', mediaErr);
+                            // Proceed to delete from Firestore even if media deletion fails
+                        }
+                    }
+
                     const updateData = {};
                     updateData[channel] = firebase.firestore.FieldValue.delete();
                     await db.collection('apps_management').doc('apk_releases').update(updateData);
