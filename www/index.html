@@ -17,6 +17,10 @@
     <script src="firebase-database-compat.js"></script>
     <script src="capacitor.js"></script>
 
+    <!-- Leaflet Location Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap"
         rel="stylesheet">
@@ -703,7 +707,7 @@
 <body class="bg-white dark:bg-black text-black dark:text-gray-100 min-h-screen transition-colors duration-0">
 
     <!-- SELECTION POPUP MODAL (Reusable, Top Level Z-Index) -->
-    <div id="selection-modal" class="fixed inset-0 z-[200] modal-backdrop hidden flex items-center justify-center p-4">
+    <div id="selection-modal" class="fixed inset-0 z-[9999] modal-backdrop hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-black border-2 border-black dark:border-white w-full max-w-sm p-6 relative shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transform scale-95 transition-transform duration-200"
             id="selection-modal-content">
             <button onclick="closeSelectionModal()"
@@ -728,7 +732,7 @@
 
     <!-- CUSTOM ALERT/CONFIRM MODAL -->
     <div id="custom-alert-overlay"
-        class="fixed inset-0 z-[200] modal-backdrop flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+        class="fixed inset-0 z-[9999] modal-backdrop flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
         <div class="bg-white dark:bg-black w-full max-w-sm border-2 border-black dark:border-white p-6 m-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transform scale-95 transition-transform duration-200"
             id="custom-alert-box">
             <div class="flex flex-col items-center text-center">
@@ -841,6 +845,43 @@
                         class="flex-1 py-3 border-2 border-black dark:border-white font-bold uppercase">Cancel</button>
                     <button type="submit"
                         class="flex-1 py-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDIT APK RELEASE MODAL -->
+    <div id="edit-apk-modal" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-black border-2 border-black dark:border-white w-full max-w-md p-6 relative shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)]">
+            <button onclick="closeEditApkModal()" class="absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-900 border border-transparent hover:border-black dark:hover:border-white transition-all">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-2xl font-black uppercase tracking-tight mb-6 flex items-center gap-3">
+                <i data-lucide="edit-3" class="w-8 h-8 text-blue-500"></i> Edit Release
+            </h2>
+            <form id="edit-apk-form" onsubmit="saveApkReleaseChanges(event)">
+                <input type="hidden" id="edit-apk-channel">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-2">File Name</label>
+                        <input type="text" id="edit-apk-name" class="w-full p-3 border-2 border-black dark:border-gray-700 bg-transparent dark:text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-2">Version</label>
+                        <input type="text" id="edit-apk-version" class="w-full p-3 border-2 border-black dark:border-gray-700 bg-transparent dark:text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-2">Release Notes</label>
+                        <textarea id="edit-apk-notes" rows="3" class="w-full p-3 border-2 border-black dark:border-gray-700 bg-transparent dark:text-white"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex gap-4">
+                    <button type="button" onclick="closeEditApkModal()"
+                        class="flex-1 py-3 border-2 border-black dark:border-white font-bold uppercase hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">Cancel</button>
+                    <button type="submit" id="btn-save-apk"
+                        class="flex-1 py-3 bg-blue-500 text-white font-bold uppercase hover:bg-blue-600 transition-colors flex items-center justify-center gap-2">Save</button>
                 </div>
             </form>
         </div>
@@ -1048,7 +1089,7 @@
     </div>
 
     <!-- Growth User List Modal -->
-    <div id="growth-users-modal" class="fixed inset-0 z-[250] modal-backdrop hidden flex items-center justify-center p-4">
+    <div id="growth-users-modal" class="fixed inset-0 z-[9999] modal-backdrop hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-zinc-900 border-4 border-black dark:border-white w-full max-w-md shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.1)] flex flex-col max-h-[80vh]">
             <div class="p-4 border-b-2 border-black dark:border-white flex items-center justify-between">
                 <div>
@@ -1072,7 +1113,7 @@
 
     <!-- IMAGE LIGHTBOX FOR ADMIN -->
     <div id="admin-image-lightbox"
-        class="fixed inset-0 z-[300] bg-black/95 hidden flex items-center justify-center p-4">
+        class="fixed inset-0 z-[9999] bg-black/95 hidden flex items-center justify-center p-4">
         <button onclick="closeAdminLightbox()"
             class="absolute top-4 right-4 p-3 text-white hover:bg-white/10 rounded-full transition-colors z-10">
             <i data-lucide="x" class="w-8 h-8"></i>
@@ -1187,6 +1228,19 @@
                         <i data-lucide="users" class="w-5 h-5 shrink-0"></i>
                         <span
                             class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">Users</span>
+                    </button>
+                    <button onclick="switchTab('attendance')" id="btn-attendance" title="Attendance"
+                        class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
+                        <i data-lucide="qr-code" class="w-5 h-5 shrink-0"></i>
+                        <span
+                            class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">Attendance</span>
+                    </button>
+                    <!-- Location Map Tab Button -->
+                    <button onclick="switchTab('location')" id="btn-location" title="Campus Map"
+                        class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
+                        <i data-lucide="map" class="w-5 h-5 shrink-0 text-blue-600"></i>
+                        <span
+                            class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">Campus Map</span>
                     </button>
                     <button onclick="switchTab('chat')" id="btn-chat" title="Chats"
                         class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
@@ -1349,7 +1403,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Pending Items Monitor -->
                     <div class="lg:col-span-2 space-y-4">
                         <h3 class="text-sm font-bold uppercase tracking-widest border-l-4 border-black dark:border-white pl-4 mb-4">Urgent Attention</h3>
@@ -1605,6 +1659,144 @@
                 </div>
 
                 <div id="user-list-container" class="grid gap-4"></div>
+            </div>
+
+            <!-- Attendance Tab -->
+            <div id="tab-attendance" class="hidden p-6 md:p-12 mb-20 max-w-5xl mx-auto">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <h2
+                        class="text-3xl font-bold uppercase border-b-2 border-black dark:border-white pb-2 inline-block">
+                        Attendance Control</h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- QR Generation Card -->
+                    <div class="p-6 border-2 border-black dark:border-white">
+                        <div class="flex items-center gap-3 mb-4">
+                            <i data-lucide="qr-code" class="w-6 h-6"></i>
+                            <h3 class="font-bold uppercase tracking-widest">Generate Room QR</h3>
+                        </div>
+                        <p class="text-xs opacity-70 mb-4 font-mono">Create a unique, static QR payload for a class. Students will scan this with the mobile app to verify presence.</p>
+                        <form id="qrGenForm" onsubmit="generateAttendanceQR(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                <div id="qrSection-container" class="border-2 border-black dark:border-white"></div>
+                                <div id="qrDept-container" class="border-2 border-black dark:border-white"></div>
+                                <div id="qrSem-container" class="border-2 border-black dark:border-white"></div>
+                            </div>
+                            <!-- Only generic QR generated containing Dept/Sem details or College ID -->
+                            <button type="submit" class="w-full py-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest hover:scale-[1.02] transition-transform">Generate Payload</button>
+                        </form>
+                        <div id="qr-result-container" class="mt-6 flex flex-col items-center hidden">
+                            <div id="qr-canvas-container" class="p-4 bg-white border-4 border-black inline-block shadow-lg"></div>
+                            <button onclick="downloadQR()" class="mt-4 px-6 py-2 bg-blue-600 text-white font-bold uppercase text-xs flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Save Image</button>
+                        </div>
+                    </div>
+
+                    <!-- Off-Days Card -->
+                    <div class="p-6 border-2 border-black dark:border-white bg-gray-50 dark:bg-zinc-900 border-dashed">
+                        <div class="flex items-center gap-3 mb-4 text-amber-600">
+                            <i data-lucide="calendar-off" class="w-6 h-6"></i>
+                            <h3 class="font-bold uppercase tracking-widest">Declare Off-Day</h3>
+                        </div>
+                        <p class="text-[10px] opacity-70 mb-4 font-mono uppercase tracking-tight">Manually pause system calculations for holidays.</p>
+                        <form id="offDayForm" onsubmit="declareOffDay(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold mb-1">Select Date</label>
+                                <input type="date" id="offDate" required class="w-full p-3 bg-white dark:bg-black border-2 border-black dark:border-white outline-none font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold mb-1">Reason / Event</label>
+                                <input type="text" id="offReason" placeholder="e.g. National Holiday, Weather" required class="w-full p-3 bg-white dark:bg-black border-2 border-black dark:border-white outline-none font-bold">
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-amber-500 text-black font-black uppercase tracking-widest hover:bg-amber-400 transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">Declare Closed</button>
+                        </form>
+                    </div>
+
+                    
+                </div>
+
+                <!-- Active QRs Log -->
+                <div class="mt-12 bg-white dark:bg-black border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6">
+                    <h3 class="font-bold uppercase tracking-widest mb-6 flex items-center gap-2"><i data-lucide="qr-code" class="w-5 h-5"></i> Active QR Codes</h3>
+                    <div id="admin-active-qrs-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div class="py-12 col-span-full border-2 border-dashed border-gray-300 dark:border-gray-700 text-center opacity-50 text-xs font-mono uppercase tracking-widest">Loading Records...</div>
+                    </div>
+                </div>
+
+                <!-- Database Off-Days Output -->
+                <div class="mt-12 bg-white dark:bg-black border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6">
+                    <h3 class="font-bold uppercase tracking-widest mb-6 flex items-center gap-2"><i data-lucide="list" class="w-5 h-5"></i> System Off-Days Log</h3>
+                    <div id="admin-off-days-list" class="space-y-3">
+                        <div class="py-12 border-2 border-dashed border-gray-300 dark:border-gray-700 text-center opacity-50 text-xs font-mono uppercase tracking-widest">Loading Records...</div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <!-- Location Map Tab -->
+            <div id="tab-location" class="hidden h-screen bg-gray-100 dark:bg-zinc-900 flex flex-col fixed inset-0 md:static z-[45]">
+                <!-- Mobile Toggle inside full screen mode -->
+                <button onclick="toggleSidebar()"
+                    class="md:hidden absolute top-4 left-4 z-50 p-2 bg-black text-white rounded-full shadow-lg">
+                    <i data-lucide="menu" class="w-4 h-4"></i>
+                </button>
+                <div class="p-4 pl-16 md:pl-4 border-b-2 border-black dark:border-white bg-white dark:bg-black shrink-0 flex items-center justify-between z-40 relative">
+                    <div>
+                        <h2 class="text-xl font-bold uppercase tracking-widest flex items-center gap-2">
+                            <i data-lucide="map" class="w-5 h-5 text-blue-600"></i> Campus Map
+                        </h2>
+                        <p class="text-[10px] font-mono opacity-50 mt-1 uppercase tracking-widest">Attendance GPS Zone Bounds</p>
+                    </div>
+                    <button onclick="saveVisualGPS()" class="px-6 py-2 bg-blue-600 text-white font-black uppercase tracking-widest text-[10px] hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(37,99,235,0.5)] transition-all flex items-center gap-2 border-2 border-transparent">
+                        <i data-lucide="save" class="w-4 h-4 hidden sm:block"></i> Save
+                    </button>
+                </div>
+                
+                <div class="flex-1 relative flex flex-col md:flex-row h-[calc(100vh-80px)] md:h-full overflow-hidden">
+                    <!-- Sidebar settings -->
+                    <div class="w-full md:w-80 bg-white dark:bg-black border-r-0 md:border-r-2 border-b-2 md:border-b-0 border-black dark:border-white p-6 shrink-0 z-10 flex flex-col overflow-y-auto">
+                        <div class="mb-6">
+                            <label class="block text-xs uppercase font-bold mb-2 tracking-widest">Search Area</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="mapSearchInput" placeholder="Name or city..." class="flex-1 p-3 bg-gray-50 dark:bg-zinc-900 border-2 border-black dark:border-white font-mono text-xs outline-none focus:bg-white dark:focus:bg-black transition-colors rounded-none placeholder-gray-400">
+                                <button type="button" onclick="searchMapLocation()" class="p-3 bg-black dark:bg-white text-white dark:text-black border-2 border-black dark:border-white hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-[2px_2px_0px_0px_rgba(37,99,235,1)]"><i data-lucide="search" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border-2 border-black dark:border-white bg-blue-50 dark:bg-blue-950 shadow-[4px_4px_0px_0px_rgba(37,99,235,1)] text-black dark:text-white mb-6">
+                            <h3 class="font-bold uppercase text-[10px] mb-3 text-blue-800 dark:text-blue-300 tracking-widest flex items-center gap-2 border-b border-blue-200 pb-2"><i data-lucide="crosshair" class="w-4 h-4"></i> Center Point</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-[9px] uppercase font-bold opacity-70">Latitude</label>
+                                    <input type="number" step="any" id="mapLat" onchange="updateMapFromInputs()" class="w-full mt-1 p-2 bg-white dark:bg-black border-2 border-black dark:border-white text-black dark:text-white font-mono text-[10px] outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] uppercase font-bold opacity-70">Longitude</label>
+                                    <input type="number" step="any" id="mapLng" onchange="updateMapFromInputs()" class="w-full mt-1 p-2 bg-white dark:bg-black border-2 border-black dark:border-white text-black dark:text-white font-mono text-[10px] outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-xs uppercase font-bold mb-4 tracking-widest flex items-center justify-between relative text-blue-600 dark:text-blue-400 mt-2">Zone Radius
+                                <span id="mapRadiusLabel" class="text-[10px] font-black bg-blue-600 text-white px-2 py-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">150m</span>
+                            </label>
+                            <input type="range" id="mapRadiusSlider" min="10" max="1000" step="10" value="150" oninput="updateMapRadius(this.value)" class="w-full accent-blue-600 block mb-2 cursor-pointer h-2 bg-gray-200 rounded-lg appearance-none">
+                            <div class="flex justify-between items-center mt-1 font-mono font-bold text-[9px] uppercase text-gray-400">
+                                <span>10m</span>
+                                <span>1km</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-4 border-t-2 border-dashed border-gray-300 dark:border-gray-800 text-[9px] uppercase font-mono opacity-60 leading-relaxed text-center">
+                            <i data-lucide="mouse-pointer-2" class="w-4 h-4 mx-auto mb-2 opacity-50 block"></i>
+                            Simply pan the map to move the center crosshair.
+                        </div>
+                    </div>
+
+                    <!-- The Map -->
+                    <div id="leafletMap" class="flex-1 w-full h-[400px] md:h-full z-0 relative cursor-crosshair"></div>
+                </div>
             </div>
 
             <!-- Chat Tab -->
@@ -1989,6 +2181,44 @@
                                 class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
                         </div>
                     </div>
+                </div>
+
+                <!-- College GPS Configuration Section -->
+                <div class="p-8 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] mt-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-5 h-5"></i> College GPS Coordinates
+                        </h3>
+                        <button onclick="resetGPSRadius()" type="button" class="px-3 py-1.5 border-2 border-black dark:border-white text-[10px] font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors rounded">
+                            Reset 150m
+                        </button>
+                    </div>
+                    
+                    <form onsubmit="saveGpsSettings(event)" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Latitude</label>
+                                <input type="number" step="any" id="api_gps_lat" required
+                                    class="w-full p-3 bg-transparent border-2 border-black dark:border-white outline-none font-mono text-sm"
+                                    placeholder="Ex: 23.777176">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Longitude</label>
+                                <input type="number" step="any" id="api_gps_lng" required
+                                    class="w-full p-3 bg-transparent border-2 border-black dark:border-white outline-none font-mono text-sm"
+                                    placeholder="Ex: 90.399452">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase mb-1">Allowed Radius (meters)</label>
+                            <input type="number" id="api_gps_radius" required
+                                class="w-full p-3 bg-transparent border-2 border-black dark:border-white outline-none font-mono text-sm"
+                                placeholder="Ex: 150">
+                        </div>
+                        <button type="submit"
+                            class="w-full py-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest hover:opacity-80">Save
+                            GPS Config</button>
+                    </form>
                 </div>
                 <!-- Offline & Sync Section -->
                 <div
@@ -2770,6 +3000,11 @@
             initCustomDropdown('rollSection-container', 'rollSection', SECTIONS, 'Select Batch', refreshRolls);
             initCustomDropdown('rollDept-container', 'rollDept', DEPARTMENTS, 'Select Dept', refreshRolls);
             initCustomDropdown('rollSem-container', 'rollSem', SEMESTERS, 'Select Sem', refreshRolls);
+
+            // Attendance QR
+            initCustomDropdown('qrSection-container', 'qrSection', SECTIONS, 'Select Batch');
+            initCustomDropdown('qrDept-container', 'qrDept', DEPARTMENTS, 'Select Dept');
+            initCustomDropdown('qrSem-container', 'qrSem', SEMESTERS, 'Select Sem');
         }
 
         // --- POPUP SYSTEM ---
@@ -4389,6 +4624,15 @@
                     document.getElementById('api_cloud_preset').value = apiKeys.cloudPreset || '';
                 }
             });
+            // Load GPS Settings
+            db.collection("settings").doc("gps_config").get().then(doc => {
+                if (doc.exists) {
+                    const gpsConfig = doc.data();
+                    document.getElementById('api_gps_lat').value = gpsConfig.lat || '';
+                    document.getElementById('api_gps_lng').value = gpsConfig.lng || '';
+                    document.getElementById('api_gps_radius').value = gpsConfig.radius || '150';
+                }
+            });
             // Device Local Settings
             const persistCheck = document.getElementById('togglePersistence');
             if (persistCheck) persistCheck.checked = (localStorage.getItem('persistence_enabled') !== 'false');
@@ -4581,6 +4825,27 @@
             } catch (e) {
                 showCustomAlert("Error", "Could not save API keys.", "error");
             }
+        }
+
+        async function saveGpsSettings(e) {
+            e.preventDefault();
+            const lat = parseFloat(document.getElementById('api_gps_lat').value);
+            const lng = parseFloat(document.getElementById('api_gps_lng').value);
+            const radius = parseInt(document.getElementById('api_gps_radius').value, 10);
+
+            try {
+                await db.collection("settings").doc("gps_config").set({
+                    lat, lng, radius
+                });
+                showCustomAlert("Saved", "GPS Configuration updated successfully.", "success");
+            } catch (e) {
+                showCustomAlert("Error", "Could not save GPS Configuration.", "error");
+            }
+        }
+
+        function resetGPSRadius() {
+            document.getElementById('api_gps_radius').value = 150;
+            showCustomAlert("Reset", "Radius reset to 150m. Make sure to click 'Save GPS Config' to apply.", "success");
         }
 
         // =============================================
@@ -5972,12 +6237,15 @@
             document.getElementById('tab-chat').classList.add('hidden');
             document.getElementById('tab-website').classList.add('hidden');
             document.getElementById('tab-app-releases').classList.add('hidden');
+            document.getElementById('tab-attendance').classList.add('hidden');
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
 
             if (tab === 'settings') updateCacheSizeDisplay();
 
             if (tab === 'users') loadUsers();
             if (tab === 'categories') loadCategories();
+            if (tab === 'attendance') { loadOffDays(); loadActiveQRs(); }
+            if (tab === 'location') { setTimeout(() => initLocationMap(), 50); }
             if (tab === 'teachers') loadTeachers();
             if (tab === 'subjects') loadSubjects();
             if (tab === 'list') renderAdminNotices();
@@ -6301,25 +6569,55 @@
         }
 
         function editApkRelease(channel) {
-            const release = apkReleases[channel];
+            const release = apkReleasesData[channel];
             if (!release) return;
 
-            const newName = prompt('Enter new APK name (e.g., Notice.apk):', release.name || '');
-            if (newName === null) return; 
+            document.getElementById('edit-apk-channel').value = channel;
+            document.getElementById('edit-apk-name').value = release.name || '';
+            document.getElementById('edit-apk-version').value = release.version || '';
+            document.getElementById('edit-apk-notes').value = release.notes || '';
 
-            const newNotes = prompt('Enter new release notes (leave blank if none):', release.notes || '');
-            if (newNotes === null) return; 
+            document.getElementById('edit-apk-modal').classList.remove('hidden');
+        }
+
+        function closeEditApkModal() {
+            document.getElementById('edit-apk-modal').classList.add('hidden');
+            document.getElementById('edit-apk-form').reset();
+        }
+
+        function saveApkReleaseChanges(event) {
+            event.preventDefault();
+            const channel = document.getElementById('edit-apk-channel').value;
+            const newName = document.getElementById('edit-apk-name').value.trim();
+            const newVersion = document.getElementById('edit-apk-version').value.trim();
+            const newNotes = document.getElementById('edit-apk-notes').value.trim();
+
+            if (!channel || !newName || !newVersion) {
+                showCustomAlert('Error', 'Name and Version are required.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btn-save-apk');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Saving...';
+            btn.disabled = true;
 
             const updateData = {};
-            updateData[`${channel}.name`] = newName.trim();
-            updateData[`${channel}.notes`] = newNotes.trim();
+            updateData[`${channel}.name`] = newName;
+            updateData[`${channel}.version`] = newVersion;
+            updateData[`${channel}.notes`] = newNotes;
 
             db.collection('apps_management').doc('apk_releases').update(updateData).then(() => {
                 showCustomAlert('Success', 'APK release updated successfully.', 'success');
+                closeEditApkModal();
                 loadApkReleases();
             }).catch(err => {
                 console.error('Edit failed:', err);
                 showCustomAlert('Error', 'Failed to edit the release: ' + err.message, 'error');
+            }).finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                lucide.createIcons();
             });
         }
 
@@ -6327,7 +6625,7 @@
             const label = channel === 'current' ? 'Current (Newest)' : 'Older / Stable';
             showCustomConfirm('Delete Release?', `This will remove the ${label} APK release. Users will no longer be able to download it.`, async () => {
                 try {
-                    const release = apkReleases[channel];
+                    const release = apkReleasesData[channel];
                     if (release && release.fileId && currentUser) {
                         try {
                             const idToken = await currentUser.getIdToken();
@@ -7580,6 +7878,265 @@
         lucide.createIcons();
     </script>
 
+    <!-- ATTENDANCE LOGIC -->
+    <script>
+        // generateAttendanceQR
+        // generateAttendanceQR
+        async function generateAttendanceQR(e) {
+            e.preventDefault();
+            const section = document.getElementById('qrSection').value;
+            const dept = document.getElementById('qrDept').value;
+            const sem = document.getElementById('qrSem').value;
+            const btn = e.target.querySelector('button[type="submit"]');
+            
+            if(!section || !dept || !sem) return showCustomAlert("Error", "Select Batch, Department and Semester first", "error");
+
+            const docId = `${section}_${dept}_${sem}`;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i class="lucide-loader animate-spin inline-block w-4 h-4 mr-2"></i> CREATING & UPLOADING...`;
+            
+            try {
+                const oldQRDoc = await db.collection('attendance_qrs').doc(docId).get();
+
+                const payload = {
+                    type: "attendance",
+                    version: "1.0",
+                    section: section,
+                    dept: dept,
+                    sem: sem,
+                    t: Date.now()
+                };
+
+                const dataStr = encodeURIComponent(JSON.stringify(payload));
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${dataStr}&margin=10`;
+
+                // Fetch blob
+                const response = await fetch(qrUrl);
+                if (!response.ok) throw new Error("Failed to generate QR image locally.");
+                
+                const blob = await response.blob();
+                const file = new File([blob], `qr_${docId}.png`, { type: 'image/png' });
+
+                // Delete old imagekit file if updating
+                if (oldQRDoc.exists) {
+                    const oldData = oldQRDoc.data();
+                    if (oldData.fileId && currentUser) {
+                        try {
+                            const token = await currentUser.getIdToken();
+                            await fetch(`${IMAGEKIT_API_BASE}/api/imagekit/delete`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                                body: JSON.stringify({ fileId: oldData.fileId })
+                            });
+                        } catch (delErr) {
+                            console.warn("Failed to delete old ImageKit file", delErr);
+                        }
+                    }
+                }
+
+                // Upload to ImageKit using primary function
+                const folderPath = `/qrs/${section}/${dept}/${sem}`;
+                const uploadRes = await uploadToImageKit(file, folderPath);
+
+                if (!uploadRes) throw new Error("ImageKit upload failed.");
+
+                // Save to Firestore
+                await db.collection('attendance_qrs').doc(docId).set({
+                    section: section,
+                    dept: dept,
+                    sem: sem,
+                    payload: payload,
+                    url: uploadRes.url,
+                    fileId: uploadRes.fileId,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                showCustomAlert("Success", "QR successfully created and uploaded!", "success");
+                loadActiveQRs();
+
+                // Display on screen
+                const container = document.getElementById('qr-canvas-container');
+                container.innerHTML = `<img id="generated-qr-img" src="${uploadRes.url}" alt="QR Code" class="w-48 h-48 pattern-dots cursor-pointer hover:scale-105 transition-transform" />`;
+                document.getElementById('qr-result-container').classList.remove('hidden');
+
+            } catch (err) {
+                showCustomAlert("Error", err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `GENERATE PAYLOAD`;
+            }
+        }
+
+        // downloadQR
+        function downloadQR() {
+            const img = document.getElementById('generated-qr-img');
+            if(!img) return;
+            window.open(img.src, '_blank');
+        }
+
+        // loadActiveQRs
+        async function loadActiveQRs() {
+            try {
+                const qrsList = document.getElementById('admin-active-qrs-list');
+                const snapshot = await db.collection('attendance_qrs').orderBy('createdAt', 'desc').get();
+                
+                if(snapshot.empty) {
+                    qrsList.innerHTML = '<div class="py-12 col-span-full border-2 border-dashed border-gray-300 dark:border-gray-700 text-center opacity-50 text-xs font-mono uppercase tracking-widest">No Active QRs</div>';
+                    return;
+                }
+                
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                    <div class="border-2 border-black dark:border-white p-4 relative group hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors flex flex-col items-center">
+                        <div class="w-full flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-bold text-sm uppercase">${data.section}</h4>
+                                <p class="text-[10px] font-mono opacity-70 uppercase">${data.dept} • ${data.sem}</p>
+                            </div>
+                            <button onclick="deleteQR('${doc.id}', '${data.fileId || ''}')" class="text-red-500 hover:text-red-700 p-1 bg-red-100 dark:bg-red-900/30 rounded" title="Delete">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div class="mt-2 text-center w-full">
+                            <img src="${data.url}" class="w-full max-w-[150px] aspect-square mx-auto border-2 border-black dark:border-white object-contain bg-white" />
+                        </div>
+                        <div class="mt-3 text-[9px] text-center font-mono opacity-50 uppercase">Updated: ${data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString() : 'Just now'}</div>
+                    </div>`;
+                });
+                
+                qrsList.innerHTML = html;
+                lucide.createIcons();
+            } catch(e) {
+                console.error("Error loading QRs:", e);
+                document.getElementById('admin-active-qrs-list').innerHTML = '<div class="py-12 col-span-full border-2 border-dashed border-red-300 text-center opacity-50 text-xs font-mono uppercase tracking-widest text-red-500">Failed to load QRs</div>';
+            }
+        }
+
+        // deleteQR
+        function deleteQR(docId, fileId) {
+            showCustomConfirm("Delete QR", "Are you sure you want to delete this QR from the system and ImageKit?", async () => {
+                try {
+                    showCustomAlert("Deleting...", "Removing QR from ImageKit and records.", "info");
+                    
+                    // Delete from ImageKit
+                    if (fileId && currentUser) {
+                        try {
+                            const token = await currentUser.getIdToken();
+                            await fetch(`${IMAGEKIT_API_BASE}/api/imagekit/delete`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify({ fileId: fileId })
+                            });
+                        } catch(ikErr) {
+                            console.warn("ImageKit deletion issue:", ikErr);
+                        }
+                    }
+                    
+                    // Delete from Firestore
+                    await db.collection('attendance_qrs').doc(docId).delete();
+                    
+                    showCustomAlert("Success", "QR successfully deleted.", "success");
+                    loadActiveQRs();
+                } catch(e) {
+                    showCustomAlert("Error", e.message, "error");
+                }
+            });
+        }
+
+        // loadGPSConfig
+        // declareOffDay
+        async function declareOffDay(e) {
+            e.preventDefault();
+            const dateVal = document.getElementById('offDate').value; // YYYY-MM-DD format
+            const reason = document.getElementById('offReason').value.trim();
+
+            if(!dateVal || !reason) return showCustomAlert("Error", "Please fill all fields", "error");
+
+            try {
+                showCustomAlert("Processing", "Declaring off day...", "info");
+                const docId = dateVal; 
+                await db.collection('attendance_off_days').doc(docId).set({
+                    date: dateVal,
+                    reason: reason,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    declaredBy: ADMIN_UID || currentUser?.uid || "admin"
+                });
+                
+                showCustomAlert("Success", "Off-day successfully recorded", "success");
+                e.target.reset();
+                loadOffDays(); // Refresh list
+            } catch (err) {
+                console.error(err);
+                showCustomAlert("Error", err.message, "error");
+            }
+        }
+
+        // loadOffDays
+        async function loadOffDays() {
+            const listObj = document.getElementById('admin-off-days-list');
+            if(!listObj) return;
+
+            try {
+                const snapshot = await db.collection('attendance_off_days').orderBy('date', 'desc').limit(30).get();
+                if(snapshot.empty) {
+                    listObj.innerHTML = `<div class="py-12 border-2 border-dashed border-gray-300 dark:border-gray-700 text-center opacity-50 text-xs font-mono uppercase tracking-widest">No Off-Days Declared</div>`;
+                    return;
+                }
+
+                let html = '';
+                // Get today's YYYY-MM-DD to highlight upcoming vs past
+                const today = new Date().toISOString().split('T')[0];
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const isUpcoming = data.date >= today;
+                    const dateObj = new Date(data.date);
+                    const dateFormatted = dateObj.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+
+                    html += `
+                        <div class="flex items-center justify-between p-4 border-2 ${isUpcoming ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/10' : 'border-gray-200 dark:border-zinc-800'}">
+                            <div>
+                                <h4 class="${isUpcoming ? 'text-amber-600 font-bold' : 'opacity-80 font-bold'}">${dateFormatted}</h4>
+                                <p class="text-[10px] font-mono uppercase opacity-60">${data.reason}</p>
+                            </div>
+                            <button onclick="deleteOffDay('${doc.id}')" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors tooltip-target" title="Remove Off-Day">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+
+                listObj.innerHTML = html;
+                lucide.createIcons();
+            } catch (err) {
+                console.error("Failed to load off days", err);
+                listObj.innerHTML = `<div class="py-12 text-red-500 text-center font-mono">Failed to load data</div>`;
+            }
+        }
+
+        // deleteOffDay
+        function deleteOffDay(docId) {
+            showCustomConfirm("Delete Off-Day", "Are you sure you want to delete this off-day?", async () => {
+                try {
+                     await db.collection('attendance_off_days').doc(docId).delete();
+                     showCustomAlert("Success", "Off-day removed", "success");
+                     loadOffDays();
+                } catch(e) {
+                     showCustomAlert("Error", "Could not remove off-day", "error");
+                }
+            });
+        }
+
+        // Call loadOffDays on dashboard start or tab switch
+        // We'll hook into switchTab for this
+    </script>
+
     <!-- HIDDEN INPUT FOR ADMIN GROUP ICON -->
     <input type="file" id="admin-group-icon-upload" class="hidden" accept="image/*">
 
@@ -7910,6 +8467,125 @@
             document.body.classList.add('is-offline');
         }
     </script>
+<script>
+        // == LOCATION MAP ADMIN LOGIC ==
+        let locationMap = null;
+        let centerMarker = null;
+        let radiusCircle = null;
+
+        async function initLocationMap() {
+            if (locationMap) {
+                locationMap.invalidateSize();
+                return; 
+            }
+            
+            let lat = 23.8103;
+            let lng = 90.4125;
+            let radius = 150;
+
+            try {
+                const docSnap = await db.collection('settings').doc('gps_config').get();
+                if (docSnap.exists) {
+                    const data = docSnap.data();
+                    if(data.lat) lat = data.lat;
+                    if(data.lng) lng = data.lng;
+                    if(data.radius) radius = data.radius;
+                }
+            } catch(e) { console.error("Error loading GPS config for map:", e); }
+
+            document.getElementById('mapLat').value = lat;
+            document.getElementById('mapLng').value = lng;
+            document.getElementById('mapRadiusSlider').value = radius;
+            document.getElementById('mapRadiusLabel').textContent = radius + "m";
+
+            locationMap = L.map('leafletMap', { zoomControl: false }).setView([lat, lng], 17);
+            L.control.zoom({ position: 'bottomright' }).addTo(locationMap);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                maxZoom: 20
+            }).addTo(locationMap);
+
+            const crosshairIcon = L.divIcon({
+                className: 'custom-crosshair border-none bg-transparent',
+                html: '<div style="width:24px;height:24px;border:3px solid #2563EB;border-radius:50%;position:relative;background:rgba(255,255,255,0.6);box-shadow:0px 4px 10px rgba(0,0,0,0.5);"><div style="width:6px;height:6px;background:#2563EB;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"></div></div>',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            centerMarker = L.marker([lat, lng], {icon: crosshairIcon}).addTo(locationMap);
+            
+            radiusCircle = L.circle([lat, lng], {
+                color: '#2563EB',
+                fillColor: '#3B82F6',
+                fillOpacity: 0.15,
+                radius: radius,
+                weight: 2,
+                dashArray: '4, 4'
+            }).addTo(locationMap);
+
+            locationMap.on('move', () => {
+                const center = locationMap.getCenter();
+                centerMarker.setLatLng(center);
+                radiusCircle.setLatLng(center);
+                document.getElementById('mapLat').value = center.lat.toFixed(6);
+                document.getElementById('mapLng').value = center.lng.toFixed(6);
+            });
+            
+            setTimeout(() => {
+                locationMap.invalidateSize();
+                locationMap.setView([lat, lng], 17);
+            }, 300);
+        }
+
+        function updateMapFromInputs() {
+            if(!locationMap) return;
+            const lat = parseFloat(document.getElementById('mapLat').value);
+            const lng = parseFloat(document.getElementById('mapLng').value);
+            if(!isNaN(lat) && !isNaN(lng)) locationMap.setView([lat, lng], locationMap.getZoom());
+        }
+
+        function updateMapRadius(val) {
+            const radius = parseInt(val);
+            document.getElementById('mapRadiusLabel').textContent = radius + "m";
+            if (radiusCircle) radiusCircle.setRadius(radius);
+        }
+
+        async function searchMapLocation() {
+            const query = document.getElementById('mapSearchInput').value.trim();
+            if (!query) return;
+            try {
+                showCustomAlert("Exploring", "Locating over network...", "info");
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, {
+                    headers: { 'Accept-Language': 'en' }
+                });
+                const data = await res.json();
+                if(data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lng = parseFloat(data[0].lon);
+                    locationMap.setView([lat, lng], 17);
+                    showCustomAlert("Success", `Identified: ${data[0].display_name.substring(0, 40)}...`, "success");
+                } else {
+                    showCustomAlert("Missing Data", "Location query yielded zero geographic matches.", "error");
+                }
+            } catch(e) {
+                console.error(e);
+                showCustomAlert("Error", "Routing search completely rejected.", "error");
+            }
+        }
+
+        async function saveVisualGPS() {
+            const lat = parseFloat(document.getElementById('mapLat').value);
+            const lng = parseFloat(document.getElementById('mapLng').value);
+            const radius = parseInt(document.getElementById('mapRadiusSlider').value);
+
+            try {
+                showCustomAlert("Saving", "Uploading map zone policy...", "info");
+                await db.collection('settings').doc('gps_config').set({ lat, lng, radius }, { merge: true });
+                showCustomAlert("Secure", "Area enforcement verified.", "success");
+            } catch(err) { showCustomAlert("Error", err.message, "error"); }
+        }
+</script>
 </body>
 
 </html>
