@@ -1578,32 +1578,52 @@
             </div>
 
             <!-- Subjects Tab -->
-            <div id="tab-subjects" class="hidden p-6 md:p-12 max-w-2xl mx-auto">
+            <div id="tab-subjects" class="hidden p-6 md:p-12 max-w-7xl mx-auto">
                 <h2
                     class="text-3xl font-bold mb-8 uppercase border-b-2 border-black dark:border-white pb-2 inline-block">
                     Manage Subjects</h2>
 
-                <div class="mb-10 p-6 border-2 border-black dark:border-white">
-                    <h3 class="font-bold uppercase mb-4">Add New Subject</h3>
-                    <form onsubmit="addSubject(event)" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="sName" required placeholder="Subject Name"
-                                class="p-3 bg-transparent border-2 border-black dark:border-white outline-none font-mono text-sm">
-                            <input type="text" id="sCode" required placeholder="Subject Code (e.g. CSE-101)"
-                                class="p-3 bg-transparent border-2 border-black dark:border-white outline-none font-mono text-sm uppercase">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="space-y-8 md:col-span-1">
+                        <div class="p-6 border-2 border-black dark:border-white bg-white dark:bg-black">
+                            <h3 class="font-bold uppercase mb-4 text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Add New Subject</h3>
+                            <form onsubmit="addSubject(event)" class="space-y-4">
+                                <div class="grid grid-cols-1 gap-4">
+                                    <input type="text" id="sName" required placeholder="Subject Name"
+                                        class="p-3 w-full bg-transparent border-2 border-black dark:border-white outline-none font-mono text-sm max-w-full">
+                                    <input type="text" id="sCode" required placeholder="Subject Code (e.g. CSE-101)"
+                                        class="p-3 w-full bg-transparent border-2 border-black dark:border-white outline-none font-mono text-sm uppercase max-w-full">
+                                </div>
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div id="sSection-container"></div>
+                                    <div id="sDept-container"></div>
+                                    <div id="sSem-container"></div>
+                                </div>
+                                <button type="submit"
+                                    class="w-full py-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest hover:opacity-80">Add
+                                    Subject</button>
+                            </form>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div id="sSection-container"></div>
-                            <div id="sDept-container"></div>
-                            <div id="sSem-container"></div>
-                        </div>
-                        <button type="submit"
-                            class="w-full py-3 bg-black text-white dark:bg-white dark:text-black font-bold uppercase tracking-widest hover:opacity-80">Add
-                            Subject</button>
-                    </form>
-                </div>
+                    </div>
 
-                <div id="subject-list-container" class="space-y-2"></div>
+                    <div class="md:col-span-2 space-y-6">
+                        <!-- Advanced Filter Bar -->
+                        <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 filter-bar">
+                            <div class="xl:col-span-1 relative">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                                <input type="text" id="subjectSearch" oninput="renderSubjects()" placeholder="SEARCH SUBJECT..."
+                                    class="w-full pl-9 p-[10px] border-2 border-black dark:border-white bg-transparent text-sm font-bold uppercase outline-none placeholder-gray-500 dark:placeholder-gray-400">
+                            </div>
+                            <div id="filterSubjectSection-container"></div>
+                            <div id="filterSubjectDept-container"></div>
+                            <div id="filterSubjectSem-container"></div>
+                        </div>
+
+                        <div id="subject-list-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="col-span-full text-center py-12 opacity-50 font-mono">Loading data...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Categories Tab -->
@@ -2982,6 +3002,10 @@
 
             // Subject Management
             initCustomDropdown('sSection-container', 'sSection', SECTIONS, 'Select Batch');
+
+            initCustomDropdown('filterSubjectSection-container', 'filterSubjectSection', SECTIONS, 'All Batches', renderSubjects);
+            initCustomDropdown('filterSubjectDept-container', 'filterSubjectDept', DEPARTMENTS, 'All Depts', renderSubjects);
+            initCustomDropdown('filterSubjectSem-container', 'filterSubjectSem', SEMESTERS, 'All Sems', renderSubjects);
             initCustomDropdown('sDept-container', 'sDept', DEPARTMENTS, 'Select Dept');
             initCustomDropdown('sSem-container', 'sSem', SEMESTERS, 'Select Sem');
 
@@ -3150,37 +3174,64 @@
         function loadSubjects() {
             db.collection('notice_subjects').orderBy('name').onSnapshot(snapshot => {
                 allSubjects = [];
-                const container = document.getElementById('subject-list-container');
-                container.innerHTML = "";
-
                 const filterOptions = [{ val: 'all', label: 'All Subjects' }];
 
                 snapshot.forEach(doc => {
                     const s = { id: doc.id, ...doc.data() };
                     allSubjects.push(s);
-
-                    const el = document.createElement('div');
-                    el.className = "flex items-center justify-between p-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-800";
-                    el.innerHTML = `
-                        <div>
-                            <p class="font-bold text-sm">${s.name} <span class="font-mono text-xs opacity-60">(${s.code})</span></p>
-                            <p class="text-[10px] uppercase font-bold opacity-50">${s.section || 'All'} - ${s.dept} - ${s.sem}</p>
-                        </div>
-                        <div class="flex gap-2">
-                             <button onclick="openEditSubjectModal('${s.id}')" class="text-blue-500 hover:text-blue-700"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                             <button onclick="deleteSubject('${s.id}')" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </div>
-                    `;
-                    container.appendChild(el);
                     filterOptions.push({ val: `${s.name} (${s.code})`, label: `${s.name} (${s.code})` });
                 });
 
                 initCustomDropdown('filterSubject-container', 'filterSubject', filterOptions, 'All Subjects', filterAdminNotices);
-                lucide.createIcons();
 
                 if (document.getElementById('nDept')) updateSubjectDropdown();
                 if (document.getElementById('editDept')) updateEditSubjectDropdown();
+
+                renderSubjects();
             });
+        }
+
+        function renderSubjects() {
+            const container = document.getElementById('subject-list-container');
+            if(!container) return;
+            container.innerHTML = "";
+
+            const filterSection = document.getElementById('filterSubjectSection')?.value || 'all';
+            const filterDept = document.getElementById('filterSubjectDept')?.value || 'all';
+            const filterSem = document.getElementById('filterSubjectSem')?.value || 'all';
+            const searchQuery = document.getElementById('subjectSearch')?.value.toLowerCase() || '';
+
+            const filtered = allSubjects.filter(s => {
+                const matchSection = filterSection === 'all' || (s.section && s.section.toLowerCase() === filterSection.toLowerCase());
+                const matchDept = filterDept === 'all' || (s.dept && s.dept.toLowerCase() === filterDept.toLowerCase());
+                const matchSem = filterSem === 'all' || (s.sem && s.sem.toLowerCase() === filterSem.toLowerCase());
+                const matchSearch = searchQuery === '' || 
+                    (s.name && s.name.toLowerCase().includes(searchQuery)) || 
+                    (s.code && s.code.toLowerCase().includes(searchQuery));
+                return matchSection && matchDept && matchSem && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                 container.innerHTML = `<div class="col-span-full text-center py-12 opacity-50 font-mono text-sm border-2 border-dashed border-black dark:border-white">No subjects match the selected filters.</div>`;
+                 return;
+            }
+
+            filtered.forEach(s => {
+                const el = document.createElement('div');
+                el.className = "flex items-center justify-between p-3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-zinc-800 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[1px] hover:-translate-x-[1px] transition-transform";
+                el.innerHTML = `
+                    <div>
+                        <p class="font-bold text-sm">${s.name} <span class="font-mono text-xs opacity-60">(${s.code})</span></p>
+                        <p class="text-[10px] uppercase font-bold opacity-50">${s.section || 'All'} - ${s.dept} - ${s.sem}</p>
+                    </div>
+                    <div class="flex gap-2">
+                             <button onclick="openEditSubjectModal('${s.id}')" class="text-blue-500 hover:text-blue-700 hover:scale-110 active:scale-95 transition-transform"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                             <button onclick="deleteSubject('${s.id}')" class="text-red-500 hover:text-red-700 hover:scale-110 active:scale-95 transition-transform"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+            lucide.createIcons();
         }
 
         function openEditSubjectModal(id) {
