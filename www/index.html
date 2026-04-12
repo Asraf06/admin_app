@@ -1233,6 +1233,20 @@
                         <span
                             class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">Users</span>
                     </button>
+                    <!-- CR Applications Tab Button -->
+                    <button onclick="switchTab('cr-applications')" id="btn-cr-applications" title="CR Approvals"
+                        class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
+                        <i data-lucide="shield-check" class="w-5 h-5 shrink-0 text-amber-500"></i>
+                        <span
+                            class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">CR Approvals</span>
+                    </button>
+                    <!-- User Reports Tab Button -->
+                    <button onclick="switchTab('user-reports')" id="btn-user-reports" title="User Reports"
+                        class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
+                        <i data-lucide="message-square-warning" class="w-5 h-5 shrink-0 text-red-500"></i>
+                        <span
+                            class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">User Reports</span>
+                    </button>
                     <button onclick="switchTab('attendance')" id="btn-attendance" title="Attendance"
                         class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
                         <i data-lucide="qr-code" class="w-5 h-5 shrink-0"></i>
@@ -2752,7 +2766,98 @@
                 </div>
             </div>
 
-        </main>
+            <!-- CR Applications Tab -->
+            <div class="tab-content hidden animate-fade-in p-2 md:p-12 mb-20" id="tab-cr-applications">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <h1 class="text-4xl font-black dark:text-white uppercase tracking-tighter">CR Approvals</h1>
+                        <p class="text-xs font-bold uppercase opacity-50">Manage CR Requests & Strict Mode</p>
+                    </div>
+                    <button onclick="loadCRApplications()" class="flex items-center gap-2 px-4 py-2 bg-black text-white dark:bg-white dark:text-black font-bold text-xs uppercase hover:opacity-80 transition-opacity rounded-lg">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Reload
+                    </button>
+                </div>
+
+                <!-- CR Applications Table -->
+                <div class="overflow-x-auto border-2 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-black rounded-lg">
+                    <table class="w-full text-left font-mono">
+                        <thead class="bg-black text-white dark:bg-white dark:text-black uppercase text-[10px] sm:text-xs tracking-wider">
+                            <tr>
+                                <th class="p-3 sm:p-4">Applicant</th>
+                                <th class="p-3 sm:p-4">Department</th>
+                                <th class="p-3 sm:p-4">Contact</th>
+                                <th class="p-3 sm:p-4 text-center">Status</th>
+                                <th class="p-3 sm:p-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cr-applications-list" class="divide-y-2 divide-gray-100 dark:divide-zinc-800 text-xs sm:text-sm">
+                            <tr class="animate-pulse">
+                                <td colspan="5" class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest">Loading applications...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Strict Mode Requests -->
+                <div class="mt-12 flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 border-t-2 border-black dark:border-white pt-8">
+                    <div>
+                        <h2 class="text-3xl font-black dark:text-white uppercase tracking-tighter text-amber-600">Strict Mode Requests</h2>
+                        <p class="text-xs font-bold uppercase opacity-50">Approve requests to restrict registrations</p>
+                    </div>
+                </div>
+                <div class="overflow-x-auto border-2 border-amber-600 dark:border-amber-500 shadow-[4px_4px_0px_0px_rgba(217,119,6,0.3)] bg-white dark:bg-black rounded-lg">
+                    <table class="w-full text-left font-mono">
+                        <thead class="bg-amber-600 text-white dark:bg-amber-500 dark:text-black uppercase text-[10px] sm:text-xs tracking-wider">
+                            <tr>
+                                <th class="p-3 sm:p-4">Class</th>
+                                <th class="p-3 sm:p-4">Requested By</th>
+                                <th class="p-3 sm:p-4 text-center">Status</th>
+                                <th class="p-3 sm:p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="strict-requests-list" class="divide-y-2 divide-gray-100 dark:divide-zinc-800 text-xs sm:text-sm">
+                            <tr>
+                                <td colspan="4" class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        
+            <!-- User Reports Tab -->
+            <div class="tab-content hidden animate-fade-in p-2 md:p-12 mb-20" id="tab-user-reports">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <h1 class="text-4xl font-black dark:text-white uppercase tracking-tighter text-red-600">User Reports</h1>
+                        <p class="text-xs font-bold uppercase opacity-50">Roll mismatch appeals from locked users</p>
+                    </div>
+                    <button onclick="loadUserReports()" class="flex items-center gap-2 px-4 py-2 bg-black text-white dark:bg-white dark:text-black font-bold text-xs uppercase hover:opacity-80 transition-opacity rounded-lg">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Reload
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto border-2 border-red-500 dark:border-red-400 shadow-[6px_6px_0px_0px_rgba(239,68,68,0.3)] bg-white dark:bg-black rounded-lg">
+                    <table class="w-full text-left font-mono">
+                        <thead class="bg-red-600 text-white dark:bg-red-500 dark:text-white uppercase text-[10px] sm:text-xs tracking-wider">
+                            <tr>
+                                <th class="p-3 sm:p-4">Student</th>
+                                <th class="p-3 sm:p-4">Class Info</th>
+                                <th class="p-3 sm:p-4">Message</th>
+                                <th class="p-3 sm:p-4 text-center">Status</th>
+                                <th class="p-3 sm:p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-reports-list" class="divide-y-2 divide-gray-100 dark:divide-zinc-800 text-xs sm:text-sm">
+                            <tr class="animate-pulse">
+                                <td colspan="5" class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest">Loading reports...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+</main>
     </div>
 </div>
 
@@ -6293,6 +6398,8 @@
             document.getElementById('tab-website').classList.add('hidden');
             document.getElementById('tab-app-releases').classList.add('hidden');
             document.getElementById('tab-attendance').classList.add('hidden');
+            document.getElementById('tab-cr-applications').classList.add('hidden');
+            document.getElementById('tab-user-reports').classList.add('hidden');
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
 
             if (tab === 'settings') updateCacheSizeDisplay();
@@ -6314,6 +6421,9 @@
             }
             if (tab === 'app-releases') {
                 loadApkReleases();
+            }
+            if (tab === 'cr-applications') {
+                loadCRApplications();
             }
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -7956,11 +8066,10 @@
 
                 const payload = {
                     type: "attendance",
-                    version: "1.0",
+                    version: "2.0",
                     section: section,
                     dept: dept,
-                    sem: sem,
-                    t: Date.now()
+                    sem: sem
                 };
 
                 const dataStr = encodeURIComponent(JSON.stringify(payload));
@@ -8274,17 +8383,25 @@
 
         // --- ACCESS CONTROL MANAGEMENT ---
         let acData = { departments: {} };
+        let strictModeMap = {};
+        let loadedSections = ['23-24'];
 
         async function loadAccessControl() {
             try {
-                const [deptSnap, acSnap] = await Promise.all([
+                const [deptSnap, acSnap, secSnap, rollsSnap] = await Promise.all([
                     db.collection('departments').orderBy('name').get(),
-                    db.collection('access_control').doc('website_access').get()
+                    db.collection('access_control').doc('website_access').get(),
+                    db.collection('sections').orderBy('name').get(),
+                    db.collection('class_rolls').get()
                 ]);
 
                 let allDepts = [];
                 if (!deptSnap.empty) {
                     allDepts = deptSnap.docs.map(d => d.data().name);
+                }
+
+                if (!secSnap.empty) {
+                    loadedSections = secSnap.docs.map(d => d.data().name);
                 }
 
                 if (acSnap.exists) {
@@ -8293,6 +8410,13 @@
                     acData = { departments: {} };
                 }
                 if (!acData.departments) acData.departments = {};
+
+                strictModeMap = {};
+                if (!rollsSnap.empty) {
+                    rollsSnap.docs.forEach(d => {
+                        strictModeMap[d.id] = d.data().strictMode === true;
+                    });
+                }
 
                 renderAccessControl(allDepts);
             } catch (err) {
@@ -8324,6 +8448,7 @@
                     .ac-toggle .slider:before { content:''; position:absolute; height:14px; width:14px; left:3px; bottom:3px; background:white; border-radius:50%; transition:0.3s; box-shadow:0 1px 3px rgba(0,0,0,0.2); }
                     .ac-toggle input:checked + .slider { background:#10b981; }
                     .ac-toggle input:checked + .slider:before { transform:translateX(16px); }
+                    .ac-toggle-strict input:checked + .slider { background:#f59e0b; }
                 `;
                 document.head.appendChild(style);
             }
@@ -8362,6 +8487,8 @@
                 ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"].forEach(sem => {
                     const status = semsData[sem] || { login: false, register: false };
                     const isAnyActive = status.login || status.register;
+                    let isStrict = false;
+                    loadedSections.forEach(sec => { if (strictModeMap[`${sec}_${dept}_${sem}`]) isStrict = true; });
 
                     semsHTML += `
                         <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-50 dark:border-zinc-800/50 last:border-b-0 hover:bg-gray-50/50 dark:hover:bg-zinc-800/30 transition-colors">
@@ -8369,18 +8496,25 @@
                                 <div class="w-1.5 h-1.5 rounded-full ${isAnyActive ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-zinc-600'}"></div>
                                 <span class="font-mono text-xs font-bold w-8">${sem}</span>
                             </div>
-                            <div class="flex items-center gap-5">
-                                <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-3 sm:gap-5 flex-wrap justify-end">
+                                <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-bold uppercase tracking-wider ${status.login ? 'text-emerald-600 dark:text-emerald-400' : 'opacity-30'}">Login</span>
                                     <label class="ac-toggle">
                                         <input type="checkbox" ${status.login ? 'checked' : ''} onchange="toggleAccessControl('${dept}', '${sem}', 'login', this.checked)">
                                         <span class="slider"></span>
                                     </label>
                                 </div>
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-1.5">
                                     <span class="text-[10px] font-bold uppercase tracking-wider ${status.register ? 'text-blue-600 dark:text-blue-400' : 'opacity-30'}">Register</span>
                                     <label class="ac-toggle">
                                         <input type="checkbox" ${status.register ? 'checked' : ''} onchange="toggleAccessControl('${dept}', '${sem}', 'register', this.checked)">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="flex items-center gap-1.5 pl-1 border-l border-gray-200 dark:border-zinc-700">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider ${isStrict ? 'text-amber-600 dark:text-amber-400' : 'opacity-30'}"><i data-lucide="lock" class="w-3 h-3 inline -mt-0.5"></i> Strict</span>
+                                    <label class="ac-toggle ac-toggle-strict">
+                                        <input type="checkbox" ${isStrict ? 'checked' : ''} onchange="toggleStrictMode('${dept}', '${sem}', this.checked)">
                                         <span class="slider"></span>
                                     </label>
                                 </div>
@@ -8424,13 +8558,50 @@
                 const enabledCount = Object.values(semsData).filter(s => s.login || s.register).length;
                 const countEl = document.getElementById(`ac-count-${dept.replace(/\s+/g, '-')}`);
                 if (countEl) countEl.textContent = `${enabledCount}/8 semesters active`;
-
-                // loadAccessControl(); removed to prevent UI refresh dropping scroll/accordion state
             } catch (err) {
                 console.error("Save failed:", err);
                 if (statusEl) {
                     statusEl.textContent = 'Error';
                     statusEl.className = 'text-[10px] font-mono uppercase bg-red-100 dark:bg-red-900/30 text-red-600 px-2 py-1 transition-all';
+                }
+            }
+        }
+
+        async function toggleStrictMode(dept, sem, value) {
+            const statusEl = document.getElementById('ac-status');
+            if (statusEl) {
+                statusEl.textContent = value ? 'Locking...' : 'Unlocking...';
+                statusEl.className = 'text-[10px] font-mono uppercase bg-amber-100 dark:bg-amber-900/30 text-amber-600 px-2 py-1 transition-all';
+            }
+            try {
+                const batch = db.batch();
+                loadedSections.forEach(sec => {
+                    const docId = `${sec}_${dept}_${sem}`;
+                    const ref = db.collection('class_rolls').doc(docId);
+                    batch.set(ref, { strictMode: value, dept: dept, sem: sem }, { merge: true });
+                    strictModeMap[docId] = value;
+                });
+                await batch.commit();
+
+                if (statusEl) {
+                    statusEl.textContent = value ? 'Strict ON' : 'Strict OFF';
+                    statusEl.className = `text-[10px] font-mono uppercase px-2 py-1 transition-all ${value ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600' : 'bg-green-100 dark:bg-green-900/30 text-green-600'}`;
+                    setTimeout(() => {
+                        statusEl.textContent = 'Active';
+                        statusEl.className = 'text-[10px] font-mono opacity-50 uppercase bg-gray-100 dark:bg-zinc-900 px-2 py-1';
+                    }, 2000);
+                }
+                showCustomAlert(
+                    value ? 'Strict Mode Enabled' : 'Strict Mode Disabled',
+                    `${dept} ${sem} is now in ${value ? 'strict (locked)' : 'open (unlocked)'} mode. ${value ? 'Only verified rolls can register/login.' : 'Any roll number can register.'}`,
+                    value ? 'warning' : 'success'
+                );
+            } catch (err) {
+                console.error("Strict mode toggle failed:", err);
+                showCustomAlert('Error', 'Failed to toggle strict mode: ' + err.message, 'error');
+                if (statusEl) {
+                    statusEl.textContent = 'Error';
+                    statusEl.className = 'text-[10px] font-mono uppercase bg-red-100 dark:bg-red-900/30 text-red-600 px-2 py-1';
                 }
             }
         }
@@ -8639,6 +8810,310 @@
                 await db.collection('settings').doc('gps_config').set({ lat, lng, radius }, { merge: true });
                 showCustomAlert("Secure", "Area enforcement verified.", "success");
             } catch(err) { showCustomAlert("Error", err.message, "error"); }
+        }
+
+        // ============================================
+        // USER REPORTS LOGIC
+        // ============================================
+        async function loadUserReports() {
+            const list = document.getElementById('user-reports-list');
+            list.innerHTML = `<tr class="animate-pulse"><td colspan="5" class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest">Loading reports...</td></tr>`;
+            
+            try {
+                const snapshot = await db.collection('user_reports')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+
+                if (snapshot.empty) {
+                    list.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-sm opacity-50 uppercase font-bold tracking-wider">No reports yet.</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    const date = d.timestamp ? new Date(d.timestamp.seconds * 1000).toLocaleDateString() : 'Unknown';
+                    const isPending = d.status === 'pending';
+                    
+                    html += `
+                    <tr class="group hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors">
+                        <td class="p-3 sm:p-4">
+                            <div class="font-bold flex items-center gap-2">
+                                <i data-lucide="user" class="w-3 h-3"></i> ${d.name || 'N/A'}
+                            </div>
+                            <div class="text-[10px] uppercase font-bold tracking-wider opacity-60 mt-1">Roll: ${d.roll || 'N/A'}</div>
+                            <div class="text-[10px] opacity-40 mt-0.5">${d.email || ''}</div>
+                        </td>
+                        <td class="p-3 sm:p-4">
+                            <div class="font-bold">${d.dept || 'N/A'}</div>
+                            <div class="text-[10px] uppercase font-bold tracking-wider opacity-60 mt-1">Sem: ${d.sem || 'N/A'} | Sec: ${d.section || 'N/A'}</div>
+                            <div class="text-[10px] opacity-40 mt-0.5">${date}</div>
+                        </td>
+                        <td class="p-3 sm:p-4 max-w-[200px]">
+                            <div class="text-xs leading-snug bg-gray-50 dark:bg-zinc-900 p-2 border border-gray-200 dark:border-zinc-800 rounded italic">
+                                "${d.message || 'No message'}"
+                            </div>
+                        </td>
+                        <td class="p-3 sm:p-4 text-center">
+                            <span class="inline-block px-2 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-sm ${isPending ? 'bg-red-100 text-red-700 border-2 border-red-300' : (d.status === 'resolved' ? 'bg-emerald-100 text-emerald-800 border-2 border-emerald-400' : 'bg-gray-100 text-gray-800 border-2 border-gray-400')}">
+                                ${d.status || 'unknown'}
+                            </span>
+                        </td>
+                        <td class="p-3 sm:p-4 text-right">
+                            ${isPending ? `
+                            <div class="flex flex-col gap-2 items-end">
+                                <button onclick="addRollFromReport('${d.uid}', '${d.roll}', '${d.dept}', '${d.sem}', '${d.section}', '${doc.id}')" class="px-3 py-1 bg-emerald-50 text-emerald-600 border-2 border-emerald-500 font-bold text-[10px] flex items-center gap-1 uppercase hover:bg-emerald-500 hover:text-white transition-colors rounded-sm">
+                                    <i data-lucide="user-check" class="w-3 h-3"></i> Add Roll
+                                </button>
+                                <button onclick="dismissReport('${doc.id}')" class="px-3 py-1 bg-gray-50 text-gray-600 border-2 border-gray-400 font-bold text-[10px] flex items-center gap-1 uppercase hover:bg-gray-400 hover:text-white transition-colors rounded-sm">
+                                    <i data-lucide="x" class="w-3 h-3"></i> Dismiss
+                                </button>
+                            </div>
+                            ` : `
+                            <div class="text-[10px] opacity-40 font-bold uppercase">Resolved</div>
+                            `}
+                        </td>
+                    </tr>
+                    `;
+                });
+                
+                list.innerHTML = html;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch (e) {
+                console.error(e);
+                list.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-500 font-bold uppercase tracking-widest">Error: ${e.message}</td></tr>`;
+            }
+        }
+
+        async function addRollFromReport(uid, roll, dept, sem, section, reportId) {
+            if (!confirm(`Add roll ${roll} to the verified list for ${section}_${dept}_${sem}?`)) return;
+            try {
+                showCustomAlert("Processing", "Adding roll to verified list...", "info");
+                const docId = `${section}_${dept}_${sem}`;
+                const ref = db.collection('class_rolls').doc(docId);
+                const snap = await ref.get();
+                
+                const rollObj = { value: roll, addedBy: 'admin', addedByName: 'Admin (from report)', type: 'Admin', timestamp: Date.now() };
+                
+                if (snap.exists) {
+                    const existingRolls = snap.data().rolls || [];
+                    const alreadyExists = existingRolls.some(r => (typeof r === 'object' ? r.value : r).toString() === roll);
+                    if (!alreadyExists) {
+                        existingRolls.push(rollObj);
+                        await ref.update({ rolls: existingRolls });
+                    }
+                } else {
+                    await ref.set({ dept, sem, rolls: [rollObj] });
+                }
+                
+                await db.collection('user_reports').doc(reportId).update({ status: 'resolved' });
+                showCustomAlert("Success", `Roll ${roll} added. User can now log in.`, "success");
+                loadUserReports();
+            } catch (e) {
+                console.error(e);
+                showCustomAlert("Error", "Failed: " + e.message, "error");
+            }
+        }
+
+        async function dismissReport(reportId) {
+            if (!confirm('Dismiss this report?')) return;
+            try {
+                await db.collection('user_reports').doc(reportId).update({ status: 'dismissed' });
+                loadUserReports();
+            } catch (e) {
+                console.error(e);
+                showCustomAlert("Error", "Failed to dismiss.", "error");
+            }
+        }
+
+        // ============================================
+        // CR APPLICATIONS LOGIC
+        // ============================================
+        async function loadCRApplications() {
+            const list = document.getElementById('cr-applications-list');
+            list.innerHTML = `<tr class="animate-pulse"><td colspan="5" class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest">Loading applications...</td></tr>`;
+            
+            try {
+                const snapshot = await db.collection('cr_applications')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+
+                if (snapshot.empty) {
+                    list.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-sm opacity-50 uppercase font-bold tracking-wider">No applications pending.</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : 'Unknown';
+                    const isPending = data.status === 'pending';
+                    
+                    html += `
+                    <tr class="group hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors">
+                        <td class="p-3 sm:p-4">
+                            <div class="font-bold flex items-center gap-2">
+                                <i data-lucide="user" class="w-3 h-3"></i> ${data.name || 'N/A'}
+                            </div>
+                            <div class="text-[10px] uppercase font-bold tracking-wider opacity-60 mt-1">Roll: ${data.roll || 'N/A'}</div>
+                        </td>
+                        <td class="p-3 sm:p-4">
+                            <div class="font-bold">${data.dept || 'N/A'}</div>
+                            <div class="text-[10px] uppercase font-bold tracking-wider opacity-60 mt-1">Sem: ${data.sem || 'N/A'} | Sec: ${data.section || 'N/A'}</div>
+                        </td>
+                        <td class="p-3 sm:p-4">
+                            ${data.whatsapp ? `
+                                <a href="https://wa.me/${data.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 text-xs mb-1 font-bold">
+                                    <i data-lucide="phone" class="w-3 h-3"></i> ${data.whatsapp}
+                                </a>
+                            ` : `<div class="opacity-50 text-[10px] uppercase mb-1">No WP</div>`}
+                            ${data.socialLink ? `
+                                <a href="${data.socialLink}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-xs truncate max-w-[150px] font-bold">
+                                    <i data-lucide="link" class="w-3 h-3 text-blue-600"></i> Open Link
+                                </a>
+                            ` : `<div class="opacity-50 text-[10px] uppercase">No Link</div>`}
+                        </td>
+                        <td class="p-3 sm:p-4 text-center border-l-2 border-transparent">
+                            <span class="inline-block px-2 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-sm ${isPending ? 'bg-amber-100 text-amber-700 border-2 border-amber-300' : (data.status === 'approved' ? 'bg-emerald-100 text-emerald-800 border-2 border-emerald-400' : 'bg-red-100 text-red-800 border-2 border-red-400')}">
+                                ${data.status || 'unknown'}
+                            </span>
+                        </td>
+                        <td class="p-3 sm:p-4 text-right">
+                            ${isPending ? `
+                            <div class="flex flex-col sm:flex-row items-end justify-end gap-2">
+                                <button onclick="approveCRApplication('${doc.id}', '${data.uid}', '${data.name}')" class="px-3 py-1 bg-emerald-50 text-emerald-600 border-2 border-emerald-500 font-bold text-[10px] flex items-center gap-1 uppercase hover:bg-emerald-500 hover:text-white transition-colors rounded-sm">
+                                    <i data-lucide="check" class="w-3 h-3"></i> Approve
+                                </button>
+                                <button onclick="rejectCRApplication('${doc.id}')" class="px-3 py-1 bg-red-50 text-red-600 border-2 border-red-500 font-bold text-[10px] flex items-center gap-1 uppercase hover:bg-red-500 hover:text-white transition-colors rounded-sm">
+                                    <i data-lucide="x" class="w-3 h-3"></i> Reject
+                                </button>
+                            </div>
+                            ` : `
+                            <div class="text-[10px] opacity-40 font-bold uppercase text-right w-full">Processed:<br>${date}</div>
+                            `}
+                        </td>
+                    </tr>
+                    `;
+                });
+                
+                list.innerHTML = html;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                loadStrictRequests(); // Load second table
+            } catch (e) {
+                console.error(e);
+                list.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-500 font-bold uppercase tracking-widest">Error loading applications: ${e.message}</td></tr>`;
+            }
+        }
+
+        async function approveCRApplication(appId, uid, name) {
+            if (!confirm(`Are you absolutely sure you want to verify ${name} as a real CR?`)) return;
+            
+            try {
+                showCustomAlert("Approving", "Upgrading student to CR...", "info");
+                // Update specific user role in DB
+                await db.collection('students').doc(uid).update({ role: 'student', isCR: true });
+                // Mark application as approved
+                await db.collection('cr_applications').doc(appId).update({ status: 'approved' });
+                showCustomAlert("Success", "CR privileges granted.", "success");
+                loadCRApplications();
+            } catch (e) {
+                console.error(e);
+                showCustomAlert("Error", "Failed to grant CR.", "error");
+            }
+        }
+
+        async function rejectCRApplication(appId) {
+            if (!confirm('Are you sure you want to reject this request?')) return;
+            
+            try {
+                showCustomAlert("Rejecting", "Processing rejection...", "info");
+                await db.collection('cr_applications').doc(appId).update({ status: 'rejected' });
+                showCustomAlert("Rejected", "Request has been discarded.", "success");
+                loadCRApplications();
+            } catch (e) {
+                console.error(e);
+                showCustomAlert("Error", "Failed to reject CR.", "error");
+            }
+        }
+
+        async function loadStrictRequests() {
+            const list = document.getElementById('strict-requests-list');
+            
+            try {
+                const snapshot = await db.collection('strict_mode_requests')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+
+                if (snapshot.empty) {
+                    list.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-sm opacity-50 uppercase font-bold tracking-wider">No requests pending.</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const date = data.timestamp ? new Date(data.timestamp).toLocaleDateString() : 'Unknown';
+                    const isPending = data.status === 'pending';
+                    
+                    html += `
+                    <tr class="group hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors">
+                        <td class="p-3 sm:p-4">
+                            <div class="font-bold flex items-center gap-2">
+                                <i data-lucide="building-2" class="w-3 h-3"></i> ${data.dept}
+                            </div>
+                            <div class="text-[10px] uppercase font-bold tracking-wider opacity-60 mt-1">Sem: ${data.sem} | Section: ${data.section}</div>
+                        </td>
+                        <td class="p-3 sm:p-4">
+                            <div class="font-bold">${data.requestedBy}</div>
+                            <div class="text-[10px] uppercase font-bold tracking-wider opacity-60 mt-1">Requested: ${date}</div>
+                        </td>
+                        <td class="p-3 sm:p-4 text-center">
+                            <span class="inline-block px-2 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-sm ${isPending ? 'bg-amber-100 text-amber-700 border-2 border-amber-300' : (data.status === 'approved' ? 'bg-red-100 text-red-800 border-2 border-red-400' : 'bg-gray-100 text-gray-800 border-2 border-gray-400')}">
+                                ${data.status}
+                            </span>
+                        </td>
+                        <td class="p-3 sm:p-4 text-right">
+                            ${isPending ? `
+                            <div class="flex flex-col sm:flex-row items-end justify-end gap-2">
+                                <button onclick="approveStrictMode('${doc.id}')" class="px-3 py-1 bg-amber-50 text-amber-600 border-2 border-amber-500 font-bold text-[10px] flex items-center gap-1 uppercase hover:bg-amber-500 hover:text-white transition-colors rounded-sm">
+                                    <i data-lucide="lock" class="w-3 h-3"></i> Lock Class
+                                </button>
+                                <button onclick="rejectStrictMode('${doc.id}')" class="px-3 py-1 bg-gray-50 text-gray-600 border-2 border-gray-500 font-bold text-[10px] flex items-center gap-1 uppercase hover:bg-gray-500 hover:text-white transition-colors rounded-sm">
+                                    <i data-lucide="x" class="w-3 h-3"></i> Reject
+                                </button>
+                            </div>
+                            ` : `
+                            <div class="text-[10px] opacity-40 font-bold uppercase text-right w-full">Resolved</div>
+                            `}
+                        </td>
+                    </tr>
+                    `;
+                });
+                list.innerHTML = html;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function approveStrictMode(reqId) {
+            if(!confirm('Enable Strict Mode? Users with fake rolls will be locked out immediately!')) return;
+            try {
+                showCustomAlert("Locking", "Activating Strict Mode...", "info");
+                // The doc ID is the class doc ID (section_dept_sem)!
+                await db.collection('class_rolls').doc(reqId).set({ strictMode: true }, { merge: true });
+                await db.collection('strict_mode_requests').doc(reqId).update({ status: 'approved' });
+                showCustomAlert("Success", "Strict Mode Activated.", "success");
+                loadStrictRequests();
+            } catch(e) { console.error(e); showCustomAlert("Error", "Failed", "error"); }
+        }
+
+        async function rejectStrictMode(reqId) {
+            if(!confirm('Reject this request?')) return;
+            try {
+                await db.collection('strict_mode_requests').doc(reqId).update({ status: 'rejected' });
+                loadStrictRequests();
+            } catch(e) { console.error(e); }
         }
 </script>
 </body>
