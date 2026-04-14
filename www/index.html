@@ -1253,6 +1253,14 @@
                         <span
                             class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">Attendance</span>
                     </button>
+                    
+                    <!-- Holidays Tab Button -->
+                    <button onclick="switchTab('holidays')" id="btn-holidays" title="Manage Holidays"
+                        class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
+                        <i data-lucide="calendar" class="w-5 h-5 shrink-0 text-red-500"></i>
+                        <span class="md:opacity-0 md:group-hover/admin:opacity-100 transition-opacity duration-200 whitespace-nowrap">Holidays</span>
+                    </button>
+                    
                     <!-- Location Map Tab Button -->
                     <button onclick="switchTab('location')" id="btn-location" title="Campus Map"
                         class="nav-btn w-full text-left py-3 px-2 font-mono text-sm border-2 border-transparent hover:border-black dark:hover:border-white transition-all flex items-center gap-3 font-bold rounded-lg relative">
@@ -2125,6 +2133,80 @@
                             <i data-lucide="save" class="w-4 h-4"></i>
                             Save
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            
+            <!-- Holidays Tab -->
+            <div id="tab-holidays" class="hidden" style="padding: 16px; margin-bottom: 80px; width: 100%; max-width: 1280px; margin-left: auto; margin-right: auto;">
+                <h2 style="font-size: 1.875rem; font-weight: 900; margin-bottom: 32px; text-transform: uppercase; border-bottom: 2px solid #fff; padding-bottom: 8px; display: inline-block; color: #fff;">Manage Holidays</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px;">
+                    <!-- Calendar Picker -->
+                    <div style="border: 1px solid #27272a; background-color: #0a0a0a; color: #fff; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; position: relative; overflow: hidden; height: fit-content; width: 100%;">
+                        
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px; color: #818cf8; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-size: 12px;">
+                            <i data-lucide="calendar" class="w-4 h-4"></i>
+                            Visual Calendar
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; background-color: #111; border: 1px solid #27272a; padding: 8px; margin-bottom: 16px;">
+                            <button onclick="changeAdminCalMonth(-1)" style="padding: 8px; background: transparent; border: none; color: #a1a1aa; cursor: pointer; border-radius: 4px;" onmouseover="this.style.backgroundColor='#27272a';this.style.color='#fff'" onmouseout="this.style.backgroundColor='transparent';this.style.color='#a1a1aa'"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <h4 id="admin-cal-month-year" style="font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; font-size: 12px; font-family: monospace; color: #e4e4e7;">...</h4>
+                            <button onclick="changeAdminCalMonth(1)" style="padding: 8px; background: transparent; border: none; color: #a1a1aa; cursor: pointer; border-radius: 4px;" onmouseover="this.style.backgroundColor='#27272a';this.style.color='#fff'" onmouseout="this.style.backgroundColor='transparent';this.style.color='#a1a1aa'"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; text-align: center; font-weight: 700; font-size: 9px; text-transform: uppercase; letter-spacing: -0.05em; color: #71717a; margin-bottom: 8px; font-family: monospace;">
+                            <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+                        </div>
+                        <div id="admin-cal-grid" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-bottom: 16px;"></div>
+
+                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-family: monospace; padding-top: 16px; border-top: 1px solid #27272a; padding-bottom: 16px; color: #a1a1aa;">
+                            <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 8px; height: 8px; border-radius: 50%; background-color: #ef4444;"></div>Gov</div>
+                            <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 8px; height: 8px; border-radius: 50%; background-color: #2563eb;"></div>Varsity</div>
+                            <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 8px; height: 8px; border-radius: 50%; background-color: #a855f7;"></div>Exam</div>
+                            <div style="display: flex; align-items: center; gap: 6px;"><div style="width: 8px; height: 8px; border-radius: 50%; background-color: #eab308;"></div>Emerg</div>
+                        </div>
+
+                        <form onsubmit="saveHolidayAdmin(event)" style="display: flex; flex-direction: column; gap: 16px; padding-top: 24px; border-top: 1px solid #27272a; margin-top: 8px;">
+                            <div>
+                                <label style="display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; color: #a1a1aa; letter-spacing: 0.05em;">Holiday Title</label>
+                                <input type="text" id="hName" required placeholder="e.g. Independence Day" style="width: 100%; padding: 10px; background-color: #111; border: 1px solid #27272a; color: #fff; outline: none; font-size: 12px; box-sizing: border-box;">
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+                                <div>
+                                    <label style="display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; color: #a1a1aa; letter-spacing: 0.05em;">Starts</label>
+                                    <input type="date" id="hStartDate" required style="width: 100%; padding: 8px; background-color: #111; border: 1px solid #27272a; color: #d4d4d8; outline: none; font-family: monospace; font-size: 10px; text-transform: uppercase; cursor: pointer; color-scheme: dark; box-sizing: border-box;">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; color: #a1a1aa; letter-spacing: 0.05em;">Ends (Opt)</label>
+                                    <input type="date" id="hEndDate" style="width: 100%; padding: 8px; background-color: #111; border: 1px solid #27272a; color: #d4d4d8; outline: none; font-family: monospace; font-size: 10px; text-transform: uppercase; cursor: pointer; color-scheme: dark; box-sizing: border-box;">
+                                </div>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; color: #a1a1aa; letter-spacing: 0.05em;">Category</label>
+                                <select id="hType" style="width: 100%; padding: 10px; background-color: #111; border: 1px solid #27272a; color: #d4d4d8; outline: none; font-weight: 700; font-size: 10px; text-transform: uppercase; cursor: pointer; box-sizing: border-box;">
+                                    <option value="gov" style="background-color: #111; color: #d4d4d8;">Government (Red)</option>
+                                    <option value="college" style="background-color: #111; color: #d4d4d8;">College (Blue)</option>
+                                    <option value="exam" style="background-color: #111; color: #d4d4d8;">Pre-Exam (Purple)</option>
+                                    <option value="emergency" style="background-color: #111; color: #d4d4d8;">Emergency (Yellow)</option>
+                                </select>
+                            </div>
+                            <button type="submit" style="width: 100%; padding: 12px; background-color: #fff; color: #000; font-weight: 900; text-transform: uppercase; font-size: 10px; letter-spacing: 0.1em; border: none; cursor: pointer; margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 8px;" onmouseover="this.style.backgroundColor='#e4e4e7'" onmouseout="this.style.backgroundColor='#fff'">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Schedule Event
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Holiday List -->
+                    <div style="border: 1px solid #27272a; background-color: #0a0a0a; color: #fff; padding: 24px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 100%;">
+                        <h3 style="font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 14px; margin-bottom: 24px; border-bottom: 1px solid #27272a; padding-bottom: 16px; display: flex; justify-content: space-between; align-items: center; color: #818cf8;">
+                            Scheduled Holidays
+                            <span id="hCountBadge" style="background-color: rgba(79, 70, 229, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); font-family: monospace; padding: 2px 8px; border-radius: 4px; font-size: 10px;">0</span>
+                        </h3>
+                        <div id="admin-holiday-list" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 8px;">
+                            <!-- Injected -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -6398,6 +6480,7 @@
             document.getElementById('tab-website').classList.add('hidden');
             document.getElementById('tab-app-releases').classList.add('hidden');
             document.getElementById('tab-attendance').classList.add('hidden');
+            document.getElementById('tab-holidays').classList.add('hidden');
             document.getElementById('tab-cr-applications').classList.add('hidden');
             document.getElementById('tab-user-reports').classList.add('hidden');
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
@@ -9115,7 +9198,244 @@
                 loadStrictRequests();
             } catch(e) { console.error(e); }
         }
-</script>
+
+        // ==========================================
+        // HOLIDAY SYSTEM (ADMIN)
+        // ==========================================
+        let adminCalDate = new Date();
+        let allHolidaysData = [];
+        let editingHolidayId = null;
+
+        function initAdminCalendar() {
+            renderAdminCalendar();
+            // Default current date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('hStartDate').value = today;
+            // Listen for changes
+            document.getElementById('hStartDate').addEventListener('change', function() {
+                const e = document.getElementById('hEndDate');
+                if(e.value && e.value < this.value) e.value = this.value;
+                // visually update calendar!
+                renderAdminCalendar();
+            });
+        }
+
+        function changeAdminCalMonth(delta) {
+            adminCalDate.setMonth(adminCalDate.getMonth() + delta);
+            renderAdminCalendar();
+            renderAdminHolidayList(); // Updates list when month changes
+        }
+
+        function renderAdminCalendar() {
+            const year = adminCalDate.getFullYear();
+            const month = adminCalDate.getMonth();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('admin-cal-month-year').innerText = monthNames[month] + " " + year;
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const grid = document.getElementById('admin-cal-grid');
+            grid.innerHTML = '';
+
+            // Blanks
+            for(let i=0; i < firstDayIndex; i++) {
+                grid.innerHTML += '<div style="height: 48px; background: transparent;"></div>';
+            }
+
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+            const currentSelectedDate = document.getElementById('hStartDate').value;
+
+            for(let i=1; i <= daysInMonth; i++) {
+                const dateStr = year + "-" + String(month+1).padStart(2,'0') + "-" + String(i).padStart(2,'0');
+                
+                const coveringHoliday = allHolidaysData.find(h => {
+                    if(!h.startDate) return false;
+                    const start = new Date(h.startDate); start.setHours(0,0,0,0);
+                    const end = h.endDate ? new Date(h.endDate) : new Date(start.getTime()); 
+                    end.setHours(23,59,59,999);
+                    const current = new Date(year, month, i); current.setHours(12,0,0,0);
+                    return current >= start && current <= end;
+                });
+
+                let cellStyle = "height: 48px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: monospace; cursor: pointer; transition: all 0.15s;";
+                let titleAttr = "";
+                
+                if (coveringHoliday) {
+                    if (coveringHoliday.type === 'gov') cellStyle += " background-color: #ef4444; border: 1px solid #dc2626; color: white; font-weight: 900;";
+                    else if (coveringHoliday.type === 'college') cellStyle += " background-color: #2563eb; border: 1px solid #1d4ed8; color: white; font-weight: 900;";
+                    else if (coveringHoliday.type === 'exam') cellStyle += " background-color: #a855f7; border: 1px solid #9333ea; color: white; font-weight: 900;";
+                    else if (coveringHoliday.type === 'emergency') cellStyle += " background-color: #eab308; border: 1px solid #ca8a04; color: black; font-weight: 900;";
+                    titleAttr = ' title="' + coveringHoliday.name + '"';
+                } else if (dateStr === currentSelectedDate) {
+                    cellStyle += " background-color: #222; border: 2px solid #52525b; color: #fff; font-weight: 700;";
+                } else if (isCurrentMonth && i === today.getDate()) {
+                    cellStyle += " background-color: #1a1a1a; border: 1px solid #52525b; color: #fff; font-weight: 700;";
+                } else {
+                    cellStyle += " background-color: #111; border: 1px solid #27272a; color: #71717a; opacity: 0.7;";
+                }
+
+                grid.innerHTML += '<div' + titleAttr + ' onclick="selectAdminCalDate(\'' + dateStr + '\')" style="' + cellStyle + '">' + i + '</div>';
+            }
+        }
+
+
+        function selectAdminCalDate(dateStr) {
+            document.getElementById('hStartDate').value = dateStr;
+            const e = document.getElementById('hEndDate');
+            if(e.value && e.value < dateStr) {
+                e.value = dateStr;
+            }
+            renderAdminCalendar(); // Re-render to show visual selection
+        }
+
+        let holidayUnsubscribe = null;
+        async function loadHolidaysAdmin() {
+            initAdminCalendar();
+            if(holidayUnsubscribe) { holidayUnsubscribe(); }
+            
+            holidayUnsubscribe = db.collection('holidays').orderBy('startDate', 'asc').onSnapshot(snap => {
+                allHolidaysData = [];
+                snap.forEach(doc => {
+                    allHolidaysData.push({ id: doc.id, ...doc.data() });
+                });
+                renderAdminCalendar();
+                renderAdminHolidayList();
+            });
+        }
+
+        function renderAdminHolidayList() {
+            const container = document.getElementById('admin-holiday-list');
+            
+            const currentYear = adminCalDate.getFullYear().toString();
+            const yearHolidays = allHolidaysData.filter(h => h.startDate && h.startDate.startsWith(currentYear));
+
+            document.getElementById('hCountBadge').innerText = yearHolidays.length;
+            
+            if(yearHolidays.length === 0) {
+                container.innerHTML = '<div style="text-align: center; opacity: 0.5; font-family: monospace; padding: 64px 0; font-size: 12px; border: 1px dashed #27272a; border-radius: 4px; color: #a1a1aa;">No holidays scheduled for ' + currentYear + '</div>';
+                return;
+            }
+
+            container.innerHTML = yearHolidays.map(h => {
+                const parseDate = (dstr) => {
+                    const parts = dstr.split('-'); 
+                    // Use DD/MM/YYYY
+                    return parts[2] + '/' + parts[1] + '/' + parts[0];
+                };
+                const startStr = h.startDate ? parseDate(h.startDate) : 'Unknown';
+                const endStr = h.endDate && h.endDate !== h.startDate ? ' - ' + parseDate(h.endDate) : '';
+                
+                let dotColor = "#ef4444";
+                let shadowColor = "rgba(239, 68, 68, 0.4)";
+                
+                if(h.type === 'college') { dotColor = "#2563eb"; shadowColor = "rgba(37, 99, 235, 0.4)"; }
+                if(h.type === 'exam') { dotColor = "#a855f7"; shadowColor = "rgba(168, 85, 247, 0.4)"; }
+                if(h.type === 'emergency') { dotColor = "#eab308"; shadowColor = "rgba(234, 179, 8, 0.4)"; }
+
+                return '<div style="padding: 16px; background-color: #111; border: 1px solid #27272a; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-radius: 4px;">' +
+                    '<div style="flex: 1; min-width: 0;">' +
+                        '<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">' +
+                            '<span style="width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background-color: ' + dotColor + '; box-shadow: 0 0 8px ' + shadowColor + ';"></span>' +
+                            '<span style="font-weight: 700; font-size: 14px; letter-spacing: 0.025em; text-transform: capitalize; color: #f4f4f5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + h.name + '</span>' +
+                        '</div>' +
+                        '<p style="font-size: 10px; font-family: monospace; margin-left: 22px; text-transform: uppercase; font-weight: 700; color: #71717a; letter-spacing: -0.05em;">' + startStr + endStr + '</p>' +
+                    '</div>' +
+                    '<div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">' +
+                        '<button onclick="editHolidayAdmin(\'' + h.id + '\')" style="padding: 8px; border: 1px solid #27272a; color: #71717a; background: transparent; cursor: pointer; border-radius: 4px;" title="Edit" onmouseover="this.style.backgroundColor=\'#2563eb\';this.style.color=\'#fff\';this.style.borderColor=\'#2563eb\'" onmouseout="this.style.backgroundColor=\'transparent\';this.style.color=\'#71717a\';this.style.borderColor=\'#27272a\'"><i data-lucide="edit-2" class="w-4 h-4"></i></button>' +
+                        '<button onclick="deleteHolidayAdmin(\'' + h.id + '\')" style="padding: 8px; border: 1px solid #27272a; color: #71717a; background: transparent; cursor: pointer; border-radius: 4px;" title="Delete" onmouseover="this.style.backgroundColor=\'#ef4444\';this.style.color=\'#fff\';this.style.borderColor=\'#ef4444\'" onmouseout="this.style.backgroundColor=\'transparent\';this.style.color=\'#71717a\';this.style.borderColor=\'#27272a\'"><i data-lucide="trash-2" class="w-4 h-4"></i></button>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+            lucide.createIcons();
+        }
+
+
+        function editHolidayAdmin(id) {
+            const h = allHolidaysData.find(x => x.id === id);
+            if (!h) return;
+            document.getElementById('hName').value = h.name;
+            document.getElementById('hStartDate').value = h.startDate;
+            document.getElementById('hEndDate').value = h.endDate || h.startDate;
+            document.getElementById('hType').value = h.type;
+            editingHolidayId = id;
+            
+            const btn = document.querySelector('form[onsubmit*="saveHolidayAdmin"] button[type="submit"]');
+            if (btn) btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Update Event';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            renderAdminCalendar(); // visually highlight the edited date
+        }
+
+        async function saveHolidayAdmin(e) {
+            e.preventDefault();
+            const name = document.getElementById('hName').value.trim();
+            const startDate = document.getElementById('hStartDate').value;
+            const endDate = document.getElementById('hEndDate').value;
+            const type = document.getElementById('hType').value;
+
+            if(!name || !startDate) return;
+            if(endDate && endDate < startDate) {
+                if(typeof showToast === 'function') showToast("End Date cannot be earlier than Start Date!");
+                return;
+            }
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Saving...';
+            btn.disabled = true;
+
+            try {
+                if (editingHolidayId) {
+                    await db.collection('holidays').doc(editingHolidayId).update({
+                        name,
+                        startDate,
+                        endDate: endDate || startDate,
+                        type
+                    });
+                    if(typeof showCustomAlert === 'function') showCustomAlert("Updated", "The holiday has been updated.", "success");
+                    editingHolidayId = null;
+                } else {
+                    await db.collection('holidays').add({
+                        name,
+                        startDate,
+                        endDate: endDate || startDate,
+                        type,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    if(typeof showCustomAlert === 'function') showCustomAlert("Added", "The holiday has been officially scheduled.", "success");
+                }
+                
+                e.target.reset();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('hStartDate').value = today;
+                document.getElementById('hEndDate').value = "";
+                btn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> Schedule Event';
+                
+                // Force calendar active highlight to clear!
+                renderAdminCalendar();
+                
+            } catch(err) {
+                if(typeof showCustomAlert === 'function') showCustomAlert("Error", "Failed to save holiday. Check permissions.", "error");
+                console.error(err);
+                btn.innerHTML = originalText;
+            } finally {
+                btn.disabled = false;
+                lucide.createIcons();
+            }
+        }
+
+        function deleteHolidayAdmin(id) {
+            if(typeof showCustomConfirm === 'function') {
+                showCustomConfirm("Delete Holiday?", "Are you sure you want to remove this holiday from the calendar?", async () => {
+                    await db.collection('holidays').doc(id).delete();
+                });
+            } else {
+                if(confirm("Delete this holiday?")) {
+                    db.collection('holidays').doc(id).delete();
+                }
+            }
+        }
+        </script>
 </body>
 
 </html>
